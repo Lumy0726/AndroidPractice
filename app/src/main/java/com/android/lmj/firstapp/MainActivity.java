@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    protected int buttonClickNum = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -14,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButton1Clicked(View v){
-        Toast.makeText(getApplicationContext(), "잘했어!", Toast.LENGTH_LONG).show();
+        String output=buttonClickNum + "회, 잘했어!";
+        //이전 메세지가 사라지기 전까지 새로운 메세지가 뜨지 않는구나..
+        Toast.makeText(getApplicationContext(), output, Toast.LENGTH_LONG).show();
+        buttonClickNum++;
     }
 }
