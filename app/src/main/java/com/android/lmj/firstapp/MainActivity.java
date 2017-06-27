@@ -32,8 +32,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(myIntent);
     }
 
-    public void onButton_NewActivity(View v){
+    public void onButton_NewActivity1(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity1.class);
+        startActivity(intent);
+    }
+
+    public void onButton_NewActivity2(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity2.class);
         startActivity(intent);
     }
 }
