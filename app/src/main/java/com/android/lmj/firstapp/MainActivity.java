@@ -41,4 +41,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), SubActivity2.class);
         startActivity(intent);
     }
+
+    public void onButton_NewActivity3(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity3.class);
+        startActivity(intent);
+    }
 }

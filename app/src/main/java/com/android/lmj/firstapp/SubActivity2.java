@@ -22,7 +22,7 @@ public class SubActivity2 extends AppCompatActivity {
         //marginValue=(int)(Math.random() * 200);
         //margin.setMargins(0, marginValue, 0, 0);
         button6Layout.verticalBias=bias / (float)100;
-        button6.setText("움직이는 버튼:" + bias + "%");
+        button6.setText("움직이는 버튼:" + ((bias < 10) ? "0" : "" ) + bias + "%");
         //button6.requestLayout();
     }
 
