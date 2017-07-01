@@ -7,7 +7,7 @@
     tools:context="com.android.lmj.firstapp.SubActivity1">
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/button8"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginBottom="0dp"
@@ -23,7 +23,7 @@
         android:background="#77ff55"/>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button9"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="0dp"
@@ -53,7 +53,7 @@
         app:layout_constraintGuide_percent="0.25" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/button10"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_margin="0dp"
