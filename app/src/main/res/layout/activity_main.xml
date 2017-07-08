@@ -69,7 +69,7 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="New Activitys"
             android:textColor="#ff000000"
@@ -84,7 +84,7 @@
             android:id="@+id/button14"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Scroll View"
+            android:text="Scroll/Frame View"
             android:onClick="onButton_NewActivity3"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/guideline4"
