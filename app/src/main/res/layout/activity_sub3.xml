@@ -6,6 +6,36 @@
     android:layout_height="match_parent"
     tools:context="com.android.lmj.firstapp.SubActivity3">
 
+    <LinearLayout
+        android:id="@+id/multiButtonCont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button16">
+
+        <Button
+            android:id="@+id/button18"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="이미지 늘리기"
+            android:onClick="onButton_ImageEx"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button17"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="이미지 줄이기"
+            android:onClick="onButton_ImageCt"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
     <Button
         android:id="@+id/button16"
         android:layout_width="0dp"
@@ -38,7 +68,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button16"
+        app:layout_constraintTop_toBottomOf="@+id/multiButtonCont"
         app:layout_constraintVertical_bias="0.0">
         <ScrollView
             android:id="@+id/scrollView"
@@ -55,13 +85,13 @@
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="800dp"
-                    android:layout_height="1500dp"
+                    android:layout_height="800dp"
                     android:src="@drawable/photo"
                     android:visibility="visible"/>
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="800dp"
-                    android:layout_height="1500dp"
+                    android:layout_height="800dp"
                     android:background="#ff333333"
                     android:visibility="invisible"/>
             </FrameLayout>
