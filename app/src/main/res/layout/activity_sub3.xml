@@ -54,15 +54,14 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="800dp"
+                    android:layout_height="1500dp"
                     android:src="@drawable/photo"
                     android:visibility="visible"/>
                 <TextView
                     android:id="@+id/textView3"
-                    android:text="a???"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="800dp"
+                    android:layout_height="1500dp"
                     android:background="#ff333333"
                     android:visibility="invisible"/>
             </FrameLayout>

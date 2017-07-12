@@ -2,6 +2,7 @@ package com.android.lmj.firstapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,10 +25,12 @@ public class SubActivity3 extends AppCompatActivity {
         imageView = (ImageView)findViewById(R.id.imageView);
         ViewGroup.LayoutParams layoutText = (ViewGroup.LayoutParams) textView.getLayoutParams();
         ViewGroup.LayoutParams layoutImage = (ViewGroup.LayoutParams) imageView.getLayoutParams();
-        layoutText.height = 1500;
-        layoutText.width= 1500;
-        layoutImage.height = 1500;
-        layoutImage.width= 1500;
+        //layoutText.height = 1500;
+        //layoutText.width= 1500;
+        //layoutImage.height = 1500;
+        //layoutImage.width= 1500;
+        layoutText.height = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 800, getResources().getDisplayMetrics());
+        layoutImage.height = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 800, getResources().getDisplayMetrics());
     }
 
     public void onButton_Finish(View v){ finish(); }
