@@ -2,20 +2,30 @@ package com.android.lmj.firstapp;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected int buttonClickNum = 0;
+    protected static int buttonClickNum = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        ConstraintLayout rootLayout = (ConstraintLayout) findViewById(R.id.rootLayout);
+        Button button = (Button) findViewById(R.id.button3);
+        button.setText("가로: " + rootLayout.getWidth() + "\n세로: " + rootLayout.getHeight());
+        super.onWindowFocusChanged(hasFocus);
     }
 
     public void onButton1Clicked(View v){
@@ -45,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onButton_NewActivity3(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity3.class);
+        startActivity(intent);
+    }
+
+    public void onButton_NewActivity4(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity4.class);
         startActivity(intent);
     }
 }
