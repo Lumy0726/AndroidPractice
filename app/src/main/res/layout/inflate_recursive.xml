@@ -10,14 +10,14 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#ff000000" />
+        android:background="#ffee9922" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#ff777777" />
+        android:background="#ff33ddcc" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -30,21 +30,21 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#ff000000"  />
+            android:background="#ffee22dd"  />
 
         <TextView
             android:id="@+id/textView12"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#ffffffff"  />
+            android:background="#ff000000"  />
 
         <LinearLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:background="#ffff8888"
+            android:background="#ffffffff"
             android:orientation="horizontal"></LinearLayout>
 
     </LinearLayout>

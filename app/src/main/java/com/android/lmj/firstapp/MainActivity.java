@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     public void onButton1Clicked(View v){
         String output= ++buttonClickNum + "회, 잘했어!";
         //이전 메세지가 사라지기 전까지 새로운 메세지가 뜨지 않는구나..
-        Toast.makeText(getApplicationContext(), output, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), output, Toast.LENGTH_SHORT).show();
     }
     public void onButton_GoogleConnect(View v){
         Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.co.kr"));
