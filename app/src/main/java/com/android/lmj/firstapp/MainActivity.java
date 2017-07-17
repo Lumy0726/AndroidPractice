@@ -62,4 +62,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), SubActivity4.class);
         startActivity(intent);
     }
+
+    public void onButton_NewActivity5(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity5.class);
+        startActivity(intent);
+    }
 }
