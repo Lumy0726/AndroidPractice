@@ -24,11 +24,8 @@
         <activity android:name=".SubActivity3" />
         <activity android:name=".SubActivity4" />
         <activity android:name=".SubActivity5" />
-
-        <service
-            android:name=".TimerService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <activity android:name=".StopActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"></activity>
     </application>
 
 </manifest>

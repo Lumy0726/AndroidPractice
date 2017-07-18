@@ -33,7 +33,7 @@
 
     <Button
         android:id="@+id/buttonT1"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Button\nButton"
         android:textSize="20dp"
@@ -44,11 +44,8 @@
 
     <Button
         android:id="@+id/buttonT2"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
         android:text="Button\nButton"
         android:textSize="20dp"
         android:onClick="onButton_TimeSec2"
