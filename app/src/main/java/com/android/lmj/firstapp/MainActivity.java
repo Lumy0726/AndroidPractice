@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onButton_NewActivity2(View v, Intent intent1){
+    public void onButton_NewActivity2(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity2.class);
         startActivity(intent);
     }
