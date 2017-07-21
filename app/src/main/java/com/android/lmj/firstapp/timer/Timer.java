@@ -89,6 +89,9 @@ public class Timer{
             }
         }
     }
+    public static void sendOneTimer(TimerAble input, int id, int time){
+        new OneTimerHandle().send(input, id, time);
+    }
 }
 
 class TimerHandle extends Handler {
@@ -102,10 +105,27 @@ class TimerHandle extends Handler {
         state = 1;
         sendEmptyMessage(0);
     }
+    @Override
     public void handleMessage(Message msg){
         if (state == 1){
             timerClass.timeCheck();
             sendEmptyMessageDelayed(0, 1);
         }
+    }
+}
+
+class OneTimerHandle extends Handler {
+    TimerAble timerAble;
+    int id;
+    void send(TimerAble timerAble, int id, int time){
+        if (timerAble != null){
+            this.timerAble = timerAble;
+            this.id = id;
+            sendEmptyMessageDelayed(0, time);
+        }
+    }
+    @Override
+    public void handleMessage(Message msg) {
+        timerAble.onTimer(id, 1);
     }
 }

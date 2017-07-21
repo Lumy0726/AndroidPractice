@@ -72,7 +72,8 @@ public class SubActivity5 extends AppCompatActivity implements TimerAble {
 
     void setButtonText(){
         for (int loop1=0; loop1 < 3; loop1++){
-            button[loop1].setText((time[loop1] / Math.pow(2, loop1)) + "초\n" + ((timerFlag[loop1])?"작동중":"멈춤"));
+            String str = String.format("%.2f초\n%s", (time[loop1] / Math.pow(2, loop1)), ((timerFlag[loop1])?"작동중":"멈춤"));
+            button[loop1].setText(str);
         }
     }
     public void onButton_TimeSec0(View v){

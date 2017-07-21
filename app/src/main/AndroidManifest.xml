@@ -24,8 +24,16 @@
         <activity android:name=".SubActivity3" />
         <activity android:name=".SubActivity4" />
         <activity android:name=".SubActivity5" />
-        <activity android:name=".StopActivity"
-            android:theme="@style/Theme.AppCompat.Light.Dialog"></activity>
+        <activity
+            android:name=".StopActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity android:name=".SubActivity6" />
+
+        <service
+            android:name=".RestartService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false"></service>
     </application>
 
 </manifest>
