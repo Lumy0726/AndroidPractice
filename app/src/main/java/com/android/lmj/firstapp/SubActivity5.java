@@ -44,7 +44,7 @@ public class SubActivity5 extends AppCompatActivity implements TimerAble {
     }
 
     @Override
-    public void onTimer(int id) {
+    public void onTimer(int id, int sendNum) {
         if (0 <= id && id < 3){
             //Log.d("Receive id", id + "");
             time[id]++;

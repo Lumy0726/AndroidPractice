@@ -7,6 +7,7 @@ package com.android.lmj.firstapp.timer;
 import android.os.SystemClock;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class Timer{
     public static final int TIMER_MAX = 10;
@@ -14,6 +15,9 @@ public class Timer{
     long[] timeSave = new long[TIMER_MAX];
     int[] timerPeriod = new int[TIMER_MAX];
     int[] timerID = new int[TIMER_MAX];
+    int idQueueNum = 0;
+    int[] idQueue = new int[TIMER_MAX];
+    int[] sendNumQueue = new int[TIMER_MAX];
     TimerHandle timerHandle;
     TimerAble timerClass;
 
@@ -67,12 +71,21 @@ public class Timer{
     }
     void timeCheck(){
         if (timerClass != null){
+            idQueueNum = 0;
             long time = SystemClock.elapsedRealtime();
             for (int loop1 = 0; loop1 < timerNum; loop1++){
-                while (time - timeSave[loop1] >= (long)timerPeriod[loop1]){
-                    timerClass.onTimer(timerID[loop1]);
-                    timeSave[loop1]+=(long)timerPeriod[loop1];
+                if (time - timeSave[loop1] >= (long)timerPeriod[loop1]){
+                    idQueue[idQueueNum] = timerID[loop1];
+                    sendNumQueue[idQueueNum] = 0;
+                    do {
+                        sendNumQueue[idQueueNum]++;
+                        timeSave[loop1]+=(long)timerPeriod[loop1];
+                    }while (time - timeSave[loop1] >= (long)timerPeriod[loop1]);
+                    idQueueNum++;
                 }
+            }
+            for (int loop1 = 0; loop1 < idQueueNum; loop1++){
+                timerClass.onTimer(idQueue[loop1], sendNumQueue[loop1]);
             }
         }
     }
@@ -87,7 +100,7 @@ class TimerHandle extends Handler {
     }
     void start(){
         state = 1;
-        sendEmptyMessageDelayed(0, 1);
+        sendEmptyMessage(0);
     }
     public void handleMessage(Message msg){
         if (state == 1){

@@ -5,5 +5,5 @@ package com.android.lmj.firstapp.timer;
  */
 
 public interface TimerAble {
-    void onTimer(int id);
+    void onTimer(int id, int sendNum);
 }
