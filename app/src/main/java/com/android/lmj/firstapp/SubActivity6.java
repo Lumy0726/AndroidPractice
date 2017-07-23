@@ -10,17 +10,49 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.android.lmj.firstapp.log.LogSystem.androidLog;
+
 public class SubActivity6 extends AppCompatActivity {
 
     EditText inputHour;
     EditText inputMinute;
     EditText inputSecond;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        androidLog("Sub6:onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub6);
+    }
+    @Override
+    protected void onRestart() {
+        androidLog("Sub6:onRestart");
+        super.onRestart();
+    }
+    @Override
+    protected void onResume() {
+        androidLog("Sub6:onResume");
+        super.onResume();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        androidLog("Sub6:onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+    }
+    @Override
+    protected void onPause() {
+        androidLog("Sub6:onPause");
+        super.onPause();
+    }
+    @Override
+    protected void onStop() {
+        androidLog("Sub6:onStop");
+        super.onStop();
+    }
+    @Override
+    protected void onDestroy() {
+        androidLog("Sub6:onDestroy");
+        super.onDestroy();
     }
 
     @Override

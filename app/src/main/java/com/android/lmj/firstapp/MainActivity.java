@@ -10,6 +10,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
+import static com.android.lmj.firstapp.log.LogSystem.*;
+
 public class MainActivity extends AppCompatActivity {
 
     protected static int buttonClickNum = 0;
@@ -17,23 +19,54 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        androidLog("Main:onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         processIntent(getIntent());
     }
-
+    @Override
+    protected void onRestart() {
+        androidLog("Main:onRestart");
+        super.onRestart();
+    }
+    @Override
+    protected void onResume() {
+        androidLog("Main:onResume");
+        super.onResume();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        androidLog("Main:onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+    }
     @Override
     protected void onNewIntent(Intent intent) {
+        androidLog("Main:onNewIntent");
         processIntent(intent);
         super.onNewIntent(intent);
     }
-
+    @Override
+    protected void onPause() {
+        androidLog("Main:onPause");
+        super.onPause();
+    }
+    @Override
+    protected void onStop() {
+        androidLog("Main:onStop");
+        super.onStop();
+    }
+    @Override
+    protected void onDestroy() {
+        androidLog("Main:onDestroy");
+        super.onDestroy();
+    }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        androidLog("Main:onWindowFocusChanged");
+        super.onWindowFocusChanged(hasFocus);
         ConstraintLayout rootLayout = (ConstraintLayout) findViewById(R.id.rootLayout);
         Button button = (Button) findViewById(R.id.button3);
         button.setText("가로: " + rootLayout.getWidth() + "\n세로: " + rootLayout.getHeight());
-        super.onWindowFocusChanged(hasFocus);
     }
 
     public void onButton1Clicked(View v){
@@ -54,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     void processIntent(Intent input){
         int restartTime = input.getIntExtra("restartTime", 0);
         if (restartTime > 0){
+            input.removeExtra("restartTime");
             restartTime /= 1000;
             int second = restartTime % 60;
             restartTime /= 60;
