@@ -133,29 +133,28 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), SubActivity1.class);
         startActivity(intent);
     }
-
     public void onButton_NewActivity2(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity2.class);
         startActivity(intent);
     }
-
     public void onButton_NewActivity3(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity3.class);
         startActivity(intent);
     }
-
     public void onButton_NewActivity4(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity4.class);
         startActivity(intent);
     }
-
     public void onButton_NewActivity5(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity5.class);
         startActivity(intent);
     }
-
     public void onButton_NewActivity6(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity6.class);
+        startActivityForResult(intent, REQUEST_CODE_ACT6);
+    }
+    public void onButton_NewActivity7(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity7.class);
         startActivityForResult(intent, REQUEST_CODE_ACT6);
     }
 }

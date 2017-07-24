@@ -18,22 +18,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SubActivity1" />
-        <activity android:name=".LinearActivity1" />
-        <activity android:name=".SubActivity2" />
-        <activity android:name=".SubActivity3" />
-        <activity android:name=".SubActivity4" />
-        <activity android:name=".SubActivity5" />
         <activity
             android:name=".StopActivity"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".SubActivity6" />
+        <activity android:name=".LinearActivity1" />
+        <activity android:name=".SubActivity1" />
+        <activity android:name=".SubActivity2" />
+        <activity android:name=".SubActivity3" />
+        <activity android:name=".SubActivity4" />
+        <activity
+            android:name=".SubActivity5"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SubActivity6"/>
 
         <service
             android:name=".RestartService"
             android:enabled="true"
             android:exported="true"
-            android:stopWithTask="false"></service>
+            android:stopWithTask="false" />
+
+        <activity android:name=".SubActivity7"></activity>
     </application>
 
 </manifest>
