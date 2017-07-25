@@ -9,8 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class SubActivity7 extends AppCompatActivity {
-    View touchView1;
-    View touchView2;
+    View[] touchView = new View[4];
     TextView touchLog;
     int logLine = 0;
     long time = SystemClock.elapsedRealtime();
@@ -19,24 +18,42 @@ public class SubActivity7 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub7);
-        touchView1 = findViewById(R.id.touchView1);
-        touchView2 = findViewById(R.id.touchView2);
+        touchView[0] = findViewById(R.id.touchView1);
+        touchView[1] = findViewById(R.id.touchView2);
+        touchView[2] = findViewById(R.id.touchView3);
+        touchView[3] = findViewById(R.id.touchView4);
         touchLog = (TextView) findViewById(R.id.touchLog);
         touchLog.setText("");
-        touchView1.setOnTouchListener(new View.OnTouchListener(){
+        touchView[0].setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 viewTouch1(event);
                 return true;
             }
         });
-        touchView2.setOnTouchListener(new View.OnTouchListener(){
+        touchView[1].setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 viewTouch2(event);
                 return true;
             }
         });
+        for (int loop1 = 2; loop1 < 4; loop1++){
+            if (touchView[loop1] != null){
+                touchView[loop1].setOnTouchListener(new View.OnTouchListener(){
+                    int code;
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        viewTouch(event, code);
+                        return true;
+                    }
+                    View.OnTouchListener setCode(int code){
+                        this.code = code;
+                        return this;
+                    }
+                }.setCode(loop1));
+            }
+        }
         detector = new GestureDetector(this, new GesDetectorLog(this));
         if (savedInstanceState != null){
             int touchLogLine = savedInstanceState.getInt("touchLogLine", -1);
@@ -83,6 +100,15 @@ public class SubActivity7 extends AppCompatActivity {
     void viewTouch2(MotionEvent input){
         detector.onTouchEvent(input);
         //TODO
+    }
+    void viewTouch(MotionEvent input, int code){
+        int action = input.getAction();
+        if (action == MotionEvent.ACTION_DOWN){
+            touchView[code].setBackgroundColor(0xff00ddff);
+        }
+        else if (action == MotionEvent.ACTION_UP){
+            touchView[code].setBackgroundColor( (code == 2) ? 0xffffffff : 0x77000000);
+        }
     }
     void touchLogOutput(String input){
         if (logLine < 10){
