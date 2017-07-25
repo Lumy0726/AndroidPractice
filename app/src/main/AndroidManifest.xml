@@ -18,11 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".RestartService"
             android:enabled="true"
             android:exported="true"
             android:stopWithTask="false" />
+
         <activity
             android:name=".StopActivity"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
@@ -34,9 +36,10 @@
         <activity
             android:name=".SubActivity5"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".SubActivity6"/>
-        <activity android:name=".SubActivity7"/>
-
+        <activity android:name=".SubActivity6" />
+        <activity android:name=".SubActivity7" />
+        <activity android:name=".SubActivity8"
+            android:screenOrientation="landscape"/>
     </application>
+
 </manifest>

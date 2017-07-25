@@ -99,7 +99,6 @@ public class SubActivity7 extends AppCompatActivity {
     }
     void viewTouch2(MotionEvent input){
         detector.onTouchEvent(input);
-        //TODO
     }
     void viewTouch(MotionEvent input, int code){
         int action = input.getAction();

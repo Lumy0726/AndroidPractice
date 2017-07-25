@@ -162,6 +162,16 @@
                 app:layout_constraintRight_toRightOf="@+id/guideline4"
                 app:layout_constraintTop_toBottomOf="@+id/button21" />
 
+            <Button
+                android:id="@+id/button32"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:onClick="onButton_NewActivity8"
+                android:text="Touch, Draw"
+                app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button28" />
+
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>
