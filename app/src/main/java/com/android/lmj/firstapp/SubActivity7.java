@@ -1,7 +1,9 @@
 package com.android.lmj.firstapp;
 
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -11,6 +13,8 @@ public class SubActivity7 extends AppCompatActivity {
     View touchView2;
     TextView touchLog;
     int logLine = 0;
+    long time = SystemClock.elapsedRealtime();
+    GestureDetector detector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +37,7 @@ public class SubActivity7 extends AppCompatActivity {
                 return true;
             }
         });
+        detector = new GestureDetector(this, new GesDetectorLog(this));
         if (savedInstanceState != null){
             int touchLogLine = savedInstanceState.getInt("touchLogLine", -1);
             if (touchLogLine >= 0){
@@ -49,6 +54,7 @@ public class SubActivity7 extends AppCompatActivity {
     }
 
     void viewTouch1(MotionEvent input){
+        long touchTime = SystemClock.elapsedRealtime();
         int action = input.getAction();
         float curX = input.getX();
         float curY = input.getY();
@@ -63,10 +69,19 @@ public class SubActivity7 extends AppCompatActivity {
             case MotionEvent.ACTION_UP:
                 str = "--Up: ";
                 break;
+            default:
+                str = "ELSE: ";
+                break;
         }
-        touchLogOutput(String.format("%s%8.4f, %8.4f", str, curX, curY));
+        time = touchTime - time;
+        if (0 < time && time < 10000){
+            touchLogOutput(String.format("%4d: %s%9.4f, %9.4f", time, str, curX, curY));
+        }
+        else touchLogOutput(String.format("----: %s%9.4f, %9.4f", str, curX, curY));
+        time = touchTime;
     }
     void viewTouch2(MotionEvent input){
+        detector.onTouchEvent(input);
         //TODO
     }
     void touchLogOutput(String input){
@@ -85,4 +100,39 @@ public class SubActivity7 extends AppCompatActivity {
         }
     }
     public void onButton_Finish(View v){ finish(); }
+}
+
+class GesDetectorLog implements GestureDetector.OnGestureListener {
+    SubActivity7 out;
+    GesDetectorLog(SubActivity7 out){
+        this.out = out;
+    }
+    @Override
+    public boolean onDown(MotionEvent e) {
+        out.touchLogOutput("--Ges--onDown");
+        return true;
+    }
+    @Override
+    public void onShowPress(MotionEvent e) {
+        out.touchLogOutput("--Ges--onShowPress");
+    }
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        out.touchLogOutput("--Ges--onSingleTapUp");
+        return true;
+    }
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        out.touchLogOutput("--Ges--onScroll: X:" + distanceX + " Y:" + distanceY);
+        return true;
+    }
+    @Override
+    public void onLongPress(MotionEvent e) {
+        out.touchLogOutput("--Ges--onLongPress");
+    }
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        out.touchLogOutput("--Ges--onFling: X:" + velocityX + " Y:" + velocityY);
+        return true;
+    }
 }
