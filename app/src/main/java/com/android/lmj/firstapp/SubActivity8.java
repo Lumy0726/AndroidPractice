@@ -10,28 +10,59 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.android.lmj.firstapp.timer.TimerAble;
 import com.android.lmj.firstapp.view.DrawView;
+import com.android.lmj.firstapp.timer.Timer;
 
-public class SubActivity8 extends AppCompatActivity {
+public class SubActivity8 extends AppCompatActivity implements TimerAble {
+    //system value
     long backKeyTime = 0;
+    boolean onCreateFlag;
+    //Timer value
+    Timer multimediaTimer;
+    static final int TIMERID_MAIN = 0;
+    //bitmap value
     Bitmap bitmapMain;
     Canvas drawCanvas;
+    int bitmapW, bitmapH;
+    DrawView drawView;
+    //circle value
+    int circleX, circleY;
+    int circleVX, circleVY;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub8);
         bitmapMain = Bitmap.createBitmap(1500, 1500, Bitmap.Config.ARGB_8888);
+        bitmapW = bitmapMain.getWidth(); bitmapH = bitmapMain.getHeight();
+        circleX = bitmapW / 2; circleY = bitmapH / 2;
+        circleVX = 0; circleVY = 30;
+        onCreateFlag = true;
+        multimediaTimer = new Timer(this);
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        DrawView drawView = (DrawView) findViewById(R.id.drawOutput);
-        drawCanvas = drawView.setBitmap(bitmapMain);
-        int w = drawCanvas.getWidth();
-        int h = drawCanvas.getHeight();
-        drawCanvas.drawRect(0, 0, w, h, colorPaint(0xffddff00));
-        drawCanvas.drawCircle(w / (float)2, h / (float)2, w / (float)4, colorPaint(0xff00ddff));
-        drawView.invalidate();
+        if (onCreateFlag){
+            onCreateFlag = false;
+            drawView = (DrawView) findViewById(R.id.drawOutput);
+            drawCanvas = drawView.setBitmap(bitmapMain);
+            int w = drawCanvas.getWidth();
+            int h = drawCanvas.getHeight();
+            drawCanvas.drawRect(0, 0, w, h, colorPaint(0xffffffff));
+            drawView.invalidate();
+            multimediaTimer.add(TIMERID_MAIN, 18);
+        }
+    }
+    @Override
+    protected void onPause() {
+        multimediaTimer.stop();
+        super.onPause();
+    }
+    @Override
+    protected void onResume() {
+        multimediaTimer.start();
+        super.onResume();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -45,6 +76,41 @@ public class SubActivity8 extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    //Primary code.
+    @Override
+    public void onTimer(int id, int sendNum) {
+        if (id == TIMERID_MAIN){
+            com.android.lmj.firstapp.log.LogSystem.androidLog(sendNum + "");
+            int circleSize = bitmapW / 20;
+            int constraintX = bitmapW - circleSize;
+            int constraintY = bitmapH - circleSize;
+            //circle delete.
+            drawCanvas.drawCircle(circleX, circleY, circleSize, colorPaint(0xffffffff));
+            //circle moving.
+            circleX += circleVX; circleY += circleVY;
+            if (circleX < circleSize){
+                circleX = 2 * circleSize - circleX;
+                circleVX *= -1;
+            }
+            else if(circleX > constraintX){
+                circleX = 2 * constraintX - circleX;
+                circleVX *= -1;
+            }
+            if (circleY < circleSize){
+                circleY = 2 * circleSize - circleY;
+                circleVY *= -1;
+            }
+            else if(circleY > constraintY){
+                circleY = 2 * constraintY - circleY;
+                circleVY *= -1;
+                circleVX = (int)(Math.random() * 101) - 50;
+            }
+            //circle draw.
+            drawCanvas.drawCircle(circleX, circleY, circleSize, colorPaint(0xff00ddff));
+            drawView.invalidate();
+        }
     }
     Paint colorPaint(int color){
         Paint colorPaint = new Paint();

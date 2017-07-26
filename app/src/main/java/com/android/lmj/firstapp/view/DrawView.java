@@ -37,7 +37,7 @@ public class DrawView extends View {
         }
         return null;
     }
-    public DrawView draw(){invalidate(); return this; }
+    public DrawView draw(){ invalidate(); return this; }
     @Override
     protected void onDraw(Canvas canvas) {
         if (bitmap != null){
