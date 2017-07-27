@@ -49,6 +49,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
         if (onCreateFlag){
             onCreateFlag = false;
             drawView = (SurfaceDrawView) findViewById(R.id.drawOutput);
+            drawView.setFpsOutput(true);
             drawCanvas = drawView.setBitmap(bitmapMain);
             //drawCanvas = drawView.testDraw();
             int w = drawCanvas.getWidth();

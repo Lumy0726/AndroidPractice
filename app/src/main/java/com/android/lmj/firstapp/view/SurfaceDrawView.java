@@ -3,6 +3,7 @@ package com.android.lmj.firstapp.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -16,11 +17,17 @@ import static com.android.lmj.firstapp.log.LogSystem.androidLog;
  */
 
 public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callback{
+
     ViewThread thread;
     SurfaceHolder mHolder;
+
     Bitmap bitmap;
     Bitmap saveBitmap;
     Rect rect;
+
+    float framePerSec;
+    boolean fpsOutput = false;
+    Paint fpsPaint;
 
     public SurfaceDrawView(Context context){
         super(context);
@@ -30,7 +37,17 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
         super(context, att);
         init();
     }
-    void init(){ (mHolder = getHolder()).addCallback(this); }
+    void init(){
+        (mHolder = getHolder()).addCallback(this);
+        fpsPaint = new Paint(){
+          Paint mySet(){
+              setColor(0xffff7777);
+              setStyle(Style.FILL);
+              setTextSize(50);
+              return this;
+          }
+        }.mySet();
+    }
     public Canvas setBitmap(Bitmap input) {
         if (input != null){
             Canvas canvas;
@@ -62,6 +79,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
             //androidLog("bitmapCopyTime: " + (int)(SystemClock.elapsedRealtime() - time));
         }
     }
+    public void setFpsOutput(boolean input){ fpsOutput = input; }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -79,7 +97,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     //Call in another thread.
     void reDraw(){
         Canvas viewCanvas = null;
-        //long time = SystemClock.elapsedRealtime();
+        long time = SystemClock.elapsedRealtime();
         try{
             viewCanvas  = mHolder.lockCanvas();
             if (viewCanvas != null){
@@ -88,6 +106,9 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                     if (saveBitmap != null){
                         viewCanvas.drawBitmap(saveBitmap, null, rect, null);
                     }
+                    if (fpsOutput){
+                        viewCanvas.drawText(String.format("%5.2f", framePerSec), 0, 50, fpsPaint);
+                    }
                 }
             }
         } finally {
@@ -95,6 +116,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                 mHolder.unlockCanvasAndPost(viewCanvas);
             }
         }
+        framePerSec = (float)1000 / (int)(SystemClock.elapsedRealtime() - time);
         //androidLog("bitmapDrawTime: " + (int)(SystemClock.elapsedRealtime() - time));
     }
 }
