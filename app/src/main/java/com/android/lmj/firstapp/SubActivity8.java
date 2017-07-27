@@ -54,7 +54,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
             int w = drawCanvas.getWidth();
             int h = drawCanvas.getHeight();
             drawCanvas.drawRect(0, 0, w, h, colorPaint(0xffffffff));
-            //drawView.invalidate();
+            drawView.update();
             multimediaTimer.add(TIMERID_MAIN, 20);
         }
     }
@@ -115,6 +115,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
             }
             //circle draw.
             drawCanvas.drawCircle(circleX, circleY, circleSize, colorPaint(0xff00ddff));
+            drawView.update();
         }
     }
     Paint colorPaint(int color){

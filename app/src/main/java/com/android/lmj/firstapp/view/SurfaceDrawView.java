@@ -19,6 +19,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     ViewThread thread;
     SurfaceHolder mHolder;
     Bitmap bitmap;
+    Bitmap saveBitmap;
     Rect rect;
 
     public SurfaceDrawView(Context context){
@@ -54,34 +55,14 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
         }
         return null;
     }
-    void reDraw(){
-        Canvas canvas = null;
-        Bitmap saveBitmap = null;
-        if (bitmap != null){
-            synchronized(bitmap){
-                //long time = SystemClock.elapsedRealtime();
-                saveBitmap = Bitmap.createBitmap(bitmap);
-                //androidLog("bitmapCopyTime: " + (int)(SystemClock.elapsedRealtime() - time));
-            }
+    public void update() {
+        if (bitmap != null) {
+            //long time = SystemClock.elapsedRealtime();
+            saveBitmap = Bitmap.createBitmap(bitmap);
+            //androidLog("bitmapCopyTime: " + (int)(SystemClock.elapsedRealtime() - time));
         }
-        //long time = SystemClock.elapsedRealtime();
-        try{
-            canvas  = mHolder.lockCanvas();
-            if (canvas != null){
-                synchronized(mHolder){
-                    canvas.drawColor(0xff000000);
-                    if (saveBitmap != null){
-                        canvas.drawBitmap(saveBitmap, null, rect, null);
-                    }
-                }
-            }
-        } finally {
-            if (canvas  != null){
-                mHolder.unlockCanvasAndPost(canvas);
-            }
-        }
-        //androidLog("bitmapDrawTime: " + (int)(SystemClock.elapsedRealtime() - time));
     }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new ViewThread(this);
@@ -95,14 +76,33 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     public void surfaceDestroyed(SurfaceHolder holder) {
         thread.off();
     }
+    //Call in another thread.
+    void reDraw(){
+        Canvas viewCanvas = null;
+        //long time = SystemClock.elapsedRealtime();
+        try{
+            viewCanvas  = mHolder.lockCanvas();
+            if (viewCanvas != null){
+                synchronized(mHolder){
+                    viewCanvas.drawColor(0xff000000);
+                    if (saveBitmap != null){
+                        viewCanvas.drawBitmap(saveBitmap, null, rect, null);
+                    }
+                }
+            }
+        } finally {
+            if (viewCanvas  != null){
+                mHolder.unlockCanvasAndPost(viewCanvas);
+            }
+        }
+        //androidLog("bitmapDrawTime: " + (int)(SystemClock.elapsedRealtime() - time));
+    }
 }
 
 class ViewThread extends Thread{
     volatile boolean state = true;
     SurfaceDrawView sdView;
-    ViewThread(SurfaceDrawView input){
-        sdView = input;
-    }
+    ViewThread(SurfaceDrawView input){ sdView = input; }
     void off() {
         state = false;
         boolean retry = true;
