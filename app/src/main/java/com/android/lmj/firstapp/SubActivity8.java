@@ -36,10 +36,10 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub8);
-        bitmapMain = Bitmap.createBitmap(1500, 1500, Bitmap.Config.ARGB_8888);
+        bitmapMain = Bitmap.createBitmap(800, 800, Bitmap.Config.ARGB_8888);
         bitmapW = bitmapMain.getWidth(); bitmapH = bitmapMain.getHeight();
         circleX = bitmapW / 2; circleY = bitmapH / 2;
-        circleVX = 0; circleVY = 30;
+        circleVX = 0; circleVY = 20;
         onCreateFlag = true;
         multimediaTimer = new Timer(this);
     }
@@ -55,7 +55,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
             int h = drawCanvas.getHeight();
             drawCanvas.drawRect(0, 0, w, h, colorPaint(0xffffffff));
             //drawView.invalidate();
-            multimediaTimer.add(TIMERID_MAIN, 30);
+            multimediaTimer.add(TIMERID_MAIN, 20);
         }
     }
     @Override
@@ -86,7 +86,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
     @Override
     public void onTimer(int id, int sendNum) {
         if (id == TIMERID_MAIN){
-            androidLog(sendNum + "");
+            //androidLog(sendNum + "");
             int circleSize = bitmapW / 20;
             int constraintX = bitmapW - circleSize;
             int constraintY = bitmapH - circleSize;
@@ -110,12 +110,11 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble {
                 else if(circleY > constraintY){
                     circleY = 2 * constraintY - circleY;
                     circleVY *= -1;
-                    circleVX = (int)(Math.random() * 101) - 50;
+                    circleVX = (int)(Math.random() * 81) - 40;
                 }
             }
             //circle draw.
             drawCanvas.drawCircle(circleX, circleY, circleSize, colorPaint(0xff00ddff));
-            drawView.reDraw();
         }
     }
     Paint colorPaint(int color){
