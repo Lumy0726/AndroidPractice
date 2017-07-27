@@ -14,6 +14,7 @@ import android.view.View;
 public class DrawView extends View {
     Bitmap bitmap;
     Rect rect;
+    int test = 0;
     public DrawView(Context context){ super(context); }
     public DrawView(Context context, AttributeSet att){super(context, att);}
     public Canvas setBitmap(Bitmap input) {
@@ -37,7 +38,6 @@ public class DrawView extends View {
         }
         return null;
     }
-    public DrawView draw(){ invalidate(); return this; }
     @Override
     protected void onDraw(Canvas canvas) {
         if (bitmap != null){

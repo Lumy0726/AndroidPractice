@@ -10,6 +10,8 @@ import android.widget.Button;
 import com.android.lmj.firstapp.timer.Timer;
 import com.android.lmj.firstapp.timer.TimerAble;
 
+import static com.android.lmj.firstapp.log.LogSystem.androidLog;
+
 /*
 사용자 정의 클래스
 Service
@@ -46,7 +48,7 @@ public class SubActivity5 extends AppCompatActivity implements TimerAble {
     @Override
     public void onTimer(int id, int sendNum) {
         if (0 <= id && id < 3){
-            //Log.d("Receive id", id + "");
+            //androidLog("Receive id " + id);
             time[id]++;
             setButtonText();
         }

@@ -48,12 +48,12 @@ public class LogSystem {
         StringBuilder logName = new StringBuilder(30);
         count++;
         if (distState) logName.append(distStr);
-        if (timeState){
-            int time = (int)((SystemClock.elapsedRealtime() - startTime) % 3600_000) / 10;
-            logName.append(String.format("%02d-%02d-%02d:", time / 6000, time / 100 % 60, time % 100));
-        }
+        if (numberState) logName.append(String.format("%04d:", count));
         logName.append(str);
-        if (numberState) logName.append(String.format(":%04d", count));
+        if (timeState){
+            int time = (int)((SystemClock.elapsedRealtime() - startTime) % 3600_000);
+            logName.append(String.format(":%02d-%02d-%03d", time / 60000, time / 1000 % 60, time % 1000));
+        }
         if (distState) logName.append(distStr);
         Log.d(logName.toString(), output);
         return this;
