@@ -74,13 +74,13 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                 if (margin > 0){
                     marginX = (int)(margin / 2);
                     rect = new Rect(marginX, 0, w - marginX, h);
-                    ratio = bitW / (float)w;
+                    ratio = bitH / (float)h;
                 }
                 else {
                     margin = h - (float)bitH * w / bitW;
                     marginY = (int)(margin / 2);
                     rect = new Rect(0, marginY, w, h - marginY);
-                    ratio = bitH / (float)h;
+                    ratio = bitW / (float)w;
                 }
                 canvas = new Canvas();
                 canvas.setBitmap(bitmap);
@@ -149,8 +149,6 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                         viewCanvas.drawColor(0xff000000);
                         if (saveBitmap != null){
                             viewCanvas.drawBitmap(saveBitmap, null, rect, null);
-                            //viewCanvas.drawBitmap(saveBitmap, null, rect, null);
-                            //viewCanvas.drawBitmap(rSaveBitmap, null, rect, null);
                         }
                         if (fpsOutput){
                             viewCanvas.drawText(String.format("%5.2f", framePerSec), 0, 50, fpsPaint);

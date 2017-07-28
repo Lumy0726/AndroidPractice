@@ -32,11 +32,16 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //bitmap value
     Bitmap bitmap;
     Canvas canvas;
+    //joystickBitmap value
+    Bitmap jBitmap;
+    float joyX, joyY;
+    int size;
     //drawView value
     Bitmap viewBitmap;
     Canvas viewCanvas;
     int viewBitmapW, viewBitmapH;
     SurfaceDrawView drawView;
+    float ratio;
     //circle value
     int circleX, circleY;
     int circleVX, circleVY;
@@ -47,6 +52,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub8);
         onCreateFlag = true;
+        //make viewBitmap, get drawView, set Timer.
         canvas = new Canvas();
         viewBitmap = Bitmap.createBitmap(600, 800, Bitmap.Config.ARGB_8888);
         viewBitmapW = viewBitmap.getWidth(); viewBitmapH = viewBitmap.getHeight();
@@ -60,7 +66,19 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         super.onWindowFocusChanged(hasFocus);
         if (onCreateFlag){
             onCreateFlag = false;
+            //drawView layout size is confirmed.
             viewCanvas = drawView.setBitmap(viewBitmap);
+            ratio = drawView.getRatio();
+            //joyStickBitmap draw.
+            size = Math.round(Tools.dipToPix(80) * ratio);
+            int wide = Math.round(Tools.dipToPix(20) * ratio);
+            jBitmap = Bitmap.createBitmap(2 * size, 2 * size, Bitmap.Config.ARGB_8888);
+            Canvas jCanvas = new Canvas();
+            jCanvas.setBitmap(jBitmap);
+            jCanvas.drawCircle(size, size, size, Tools.colorPaint(0x337f7f7f));
+            jCanvas.drawCircle(size, size, size - wide, Tools.alphaPaint(0));
+            jCanvas.drawCircle(size, size, wide / 2, Tools.colorPaint(0x337f7f7f));
+            //initialize.
             initialize();
             drawView.update();
             multimediaTimer.add(TIMERID_MAIN, 16);
@@ -96,18 +114,33 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         initialize();
     }
     void initialize(){
+
+        //circle value.
         circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
         circleVX = 0; circleVY = 20;
         circleSize = viewBitmapW / 20;
         constraintX = viewBitmapW - circleSize;
         constraintY = viewBitmapH - circleSize;
+        //bitmap reset.
         viewCanvas.drawColor(0xffffffff);
         bitmap = Bitmap.createBitmap(viewBitmap);
         canvas.setBitmap(bitmap);
+        //Joystick reset.
+        joyX = viewBitmapW / (float)2 - size; joyY = viewBitmapH / (float)2 - size;
     }
     @Override
     public boolean touchEvent(MotionEvent input) {
-        androidLog("X:" + input.getX() + " Y:" + input.getY());
+        switch(input.getAction()){
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_UP:
+                joyX = (input.getX() - drawView.getMarginX()) * ratio - size;
+                joyY = (input.getY() - drawView.getMarginY()) * ratio - size;
+                break;
+            default:
+                break;
+        }
+        //androidLog("X:" + input.getX() + " Y:" + input.getY());
         return true;
     }
     @Override
@@ -140,18 +173,9 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             //circle draw.
             canvas.drawCircle(circleX, circleY, circleSize, Tools.colorPaint(0xff00ddff));
             //Joystick draw.
-            float ratio = drawView.getRatio();
-            int size = (int)(Tools.dipToPix(70) * ratio);
-            int wide = (int)(Tools.dipToPix(20) * ratio);
-            Bitmap tempBitmap = Bitmap.createBitmap(2 * size, 2 * size, Bitmap.Config.ARGB_8888);
-            Canvas tempCanvas = new Canvas();
-            tempCanvas.setBitmap(tempBitmap);
-            tempCanvas.drawCircle(size, size, size, Tools.colorPaint(0x337f7f7f));
-            tempCanvas.drawCircle(size, size, size - wide, Tools.alphaPaint(0));
-            tempCanvas.drawCircle(size, size, wide / 2, Tools.colorPaint(0x337f7f7f));
             //drawView draw.
             viewCanvas.drawBitmap(bitmap, 0, 0, null);
-            viewCanvas.drawBitmap(tempBitmap, viewBitmapW / 2 - size, viewBitmapH / 2 - size, null);
+            viewCanvas.drawBitmap(jBitmap, joyX, joyY, null);
             drawView.update();
         }
     }
