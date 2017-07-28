@@ -7,8 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.android.lmj.firstapp.tools.Tools;
 
 import static com.android.lmj.firstapp.log.LogSystem.androidLog;
 
@@ -21,13 +24,24 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     ViewThread thread;
     SurfaceHolder mHolder;
 
-    Bitmap bitmap;
-    Bitmap saveBitmap;
+    Bitmap bitmap, saveBitmap;
+    Canvas canvas;
     Rect rect;
+    int marginX = 0, marginY = 0;
+    float ratio;
+
+    boolean updateState = false;
+    int frameNum = 0;
+    long time;
 
     float framePerSec;
     boolean fpsOutput = false;
     Paint fpsPaint;
+
+    TouchEvent touchEventClass;
+    public interface TouchEvent{
+        boolean touchEvent(MotionEvent input);
+    }
 
     public SurfaceDrawView(Context context){
         super(context);
@@ -50,7 +64,6 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     }
     public Canvas setBitmap(Bitmap input) {
         if (input != null){
-            Canvas canvas;
             synchronized(this){
                 bitmap = input;
                 int w = getWidth();
@@ -59,31 +72,62 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                 int bitH = bitmap.getHeight();
                 float margin = w - (float)bitW * h / bitH;
                 if (margin > 0){
-                    rect = new Rect((int)margin / 2, 0, w - (int)margin / 2, h);
+                    marginX = (int)(margin / 2);
+                    rect = new Rect(marginX, 0, w - marginX, h);
+                    ratio = bitW / (float)w;
                 }
                 else {
                     margin = h - (float)bitH * w / bitW;
-                    rect = new Rect(0, (int)margin / 2, w, h - (int)margin / 2);
+                    marginY = (int)(margin / 2);
+                    rect = new Rect(0, marginY, w, h - marginY);
+                    ratio = bitH / (float)h;
                 }
                 canvas = new Canvas();
                 canvas.setBitmap(bitmap);
+                update();
             }
             return canvas;
         }
         return null;
     }
+    public boolean changeBitmap(Bitmap input){
+        if (bitmap != null){
+            if (bitmap.getWidth() == input.getWidth() && bitmap.getHeight() == input.getHeight()){
+                bitmap = input;
+                canvas.setBitmap(bitmap);
+                update();
+                return true;
+            }
+        }
+        return false;
+    }
+    public float getRatio(){ return ratio; }
+    public int getMarginX(){ return marginX; }
+    public int getMarginY(){ return marginY; }
     public void update() {
         if (bitmap != null) {
             //long time = SystemClock.elapsedRealtime();
             saveBitmap = Bitmap.createBitmap(bitmap);
             //androidLog("bitmapCopyTime: " + (int)(SystemClock.elapsedRealtime() - time));
+            updateState = true;
         }
     }
     public void setFpsOutput(boolean input){ fpsOutput = input; }
+    public void setTouchEventClass(TouchEvent input){ touchEventClass = input; }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (touchEventClass != null){
+            return touchEventClass.touchEvent(event);
+        }
+        else {
+            return super.onTouchEvent(event);
+        }
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new ViewThread(this);
+        time = SystemClock.elapsedRealtime();
         thread.start();
     }
     @Override
@@ -91,32 +135,40 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
 
     }
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        thread.off();
-    }
+    public void surfaceDestroyed(SurfaceHolder holder) { thread.off(); }
     //Call in another thread.
     void reDraw(){
         Canvas viewCanvas = null;
-        long time = SystemClock.elapsedRealtime();
-        try{
-            viewCanvas  = mHolder.lockCanvas();
-            if (viewCanvas != null){
-                synchronized(mHolder){
-                    viewCanvas.drawColor(0xff000000);
-                    if (saveBitmap != null){
-                        viewCanvas.drawBitmap(saveBitmap, null, rect, null);
-                    }
-                    if (fpsOutput){
-                        viewCanvas.drawText(String.format("%5.2f", framePerSec), 0, 50, fpsPaint);
+        if (updateState){
+            updateState = false;
+            frameNum++;
+            try{
+                viewCanvas  = mHolder.lockCanvas();
+                if (viewCanvas != null){
+                    synchronized(mHolder){
+                        viewCanvas.drawColor(0xff000000);
+                        if (saveBitmap != null){
+                            viewCanvas.drawBitmap(saveBitmap, null, rect, null);
+                            //viewCanvas.drawBitmap(saveBitmap, null, rect, null);
+                            //viewCanvas.drawBitmap(rSaveBitmap, null, rect, null);
+                        }
+                        if (fpsOutput){
+                            viewCanvas.drawText(String.format("%5.2f", framePerSec), 0, 50, fpsPaint);
+                        }
                     }
                 }
-            }
-        } finally {
-            if (viewCanvas  != null){
-                mHolder.unlockCanvasAndPost(viewCanvas);
+            } finally {
+                if (viewCanvas  != null){
+                    mHolder.unlockCanvasAndPost(viewCanvas);
+                }
             }
         }
-        framePerSec = (float)1000 / (int)(SystemClock.elapsedRealtime() - time);
+        long endTime = SystemClock.elapsedRealtime();
+        if (endTime - time > (long)500){
+            framePerSec = (float)frameNum * 1000 / (int)(endTime - time);
+            frameNum = 0;
+            time = endTime;
+        }
         //androidLog("bitmapDrawTime: " + (int)(SystemClock.elapsedRealtime() - time));
     }
 }

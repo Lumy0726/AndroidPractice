@@ -10,6 +10,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.lmj.firstapp.tools.Tools;
+
 import static com.android.lmj.firstapp.log.LogSystem.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         androidLog("Main:onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Tools.tools_initial(this);
         processIntent(getIntent());
     }
     @Override
