@@ -14,12 +14,33 @@ import android.util.TypedValue;
  */
 
 public class Tools {
+
     static DisplayMetrics displayMetrics;
+    //Tools_initial
     public static void tools_initial(AppCompatActivity input){
-        displayMetrics = input.getResources().getDisplayMetrics();
+        dipToPixInit(input.getResources().getDisplayMetrics());
+    }
+    //dipToPix
+    public static void dipToPixInit(DisplayMetrics input){
+        displayMetrics = input;
     }
     public static float dipToPix(int dip){
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, displayMetrics);
+        if (displayMetrics != null){
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, displayMetrics);
+        }
+        return (float)0;
+    }
+    //Canvas, Bitmap, Paint.
+    public static Paint colorPaint(int color){
+        Paint colorPaint = new Paint();
+        colorPaint.setColor(color);
+        return colorPaint;
+    }
+    public static Paint linePaint(int color, int width){
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStrokeWidth(width);
+        return paint;
     }
     public static Paint alphaPaint(int alpha){
         Paint paint = new Paint();
@@ -43,9 +64,5 @@ public class Tools {
         canvas.drawColor(alpha << 24, PorterDuff.Mode.DST_IN);
         return canvas;
     }
-    public static Paint colorPaint(int color){
-        Paint colorPaint = new Paint();
-        colorPaint.setColor(color);
-        return colorPaint;
-    }
+    public static Canvas resetCanvas(Canvas canvas){ return setAlpha(canvas, 0); }
 }

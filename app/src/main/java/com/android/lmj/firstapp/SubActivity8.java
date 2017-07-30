@@ -2,9 +2,6 @@ package com.android.lmj.firstapp;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.DrawFilter;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,8 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.lmj.firstapp.joystick.JoyStick;
 import com.android.lmj.firstapp.timer.TimerAble;
-import com.android.lmj.firstapp.view.DrawView;
 import com.android.lmj.firstapp.timer.Timer;
 import com.android.lmj.firstapp.view.SurfaceDrawView;
 
@@ -29,19 +26,19 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //Timer value
     Timer multimediaTimer;
     static final int TIMERID_MAIN = 0;
+    //JoyStick value
+    JoyStick joyStick;
+    int joyInputID;
     //bitmap value
     Bitmap bitmap;
     Canvas canvas;
-    //joystickBitmap value
-    Bitmap jBitmap;
-    float joyX, joyY;
-    int size;
     //drawView value
     Bitmap viewBitmap;
     Canvas viewCanvas;
     int viewBitmapW, viewBitmapH;
     SurfaceDrawView drawView;
-    float ratio;
+    float viewRatio;
+    int viewMarginX, viewMarginY;
     //circle value
     int circleX, circleY;
     int circleVX, circleVY;
@@ -68,21 +65,29 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             onCreateFlag = false;
             //drawView layout size is confirmed.
             viewCanvas = drawView.setBitmap(viewBitmap);
-            ratio = drawView.getRatio();
-            //joyStickBitmap draw.
-            size = Math.round(Tools.dipToPix(80) * ratio);
-            int wide = Math.round(Tools.dipToPix(20) * ratio);
-            jBitmap = Bitmap.createBitmap(2 * size, 2 * size, Bitmap.Config.ARGB_8888);
-            Canvas jCanvas = new Canvas();
-            jCanvas.setBitmap(jBitmap);
-            jCanvas.drawCircle(size, size, size, Tools.colorPaint(0x337f7f7f));
-            jCanvas.drawCircle(size, size, size - wide, Tools.alphaPaint(0));
-            jCanvas.drawCircle(size, size, wide / 2, Tools.colorPaint(0x337f7f7f));
+            viewRatio = drawView.getRatio();
+            viewMarginX = drawView.getMarginX(); viewMarginY = drawView.getMarginY();
+            //joyStick initialize.
+            joyStick = new JoyStick(viewRatio);
             //initialize.
-            initialize();
+            reset();
             drawView.update();
             multimediaTimer.add(TIMERID_MAIN, 16);
         }
+    }
+    void reset(){
+        //circle value.
+        circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
+        circleVX = 0; circleVY = 20;
+        circleSize = viewBitmapW / 20;
+        constraintX = viewBitmapW - circleSize;
+        constraintY = viewBitmapH - circleSize;
+        //bitmap reset.
+        viewCanvas.drawColor(0xffffffff);
+        bitmap = Bitmap.createBitmap(viewBitmap);
+        canvas.setBitmap(bitmap);
+        //Joystick reset.
+        joyStick.setMoveOff(viewBitmapW / (float)2, viewBitmapH / (float)2);
     }
     @Override
     protected void onPause() {
@@ -109,33 +114,27 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     }
 
     //Primary code.
-
-    public void onButton_Initialize(View v){
-        initialize();
-    }
-    void initialize(){
-
-        //circle value.
-        circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
-        circleVX = 0; circleVY = 20;
-        circleSize = viewBitmapW / 20;
-        constraintX = viewBitmapW - circleSize;
-        constraintY = viewBitmapH - circleSize;
-        //bitmap reset.
-        viewCanvas.drawColor(0xffffffff);
-        bitmap = Bitmap.createBitmap(viewBitmap);
-        canvas.setBitmap(bitmap);
-        //Joystick reset.
-        joyX = viewBitmapW / (float)2 - size; joyY = viewBitmapH / (float)2 - size;
-    }
+    public void onButton_Reset(View v){ reset(); }
     @Override
     public boolean touchEvent(MotionEvent input) {
-        switch(input.getAction()){
+        int index;
+        switch(input.getActionMasked()){
             case MotionEvent.ACTION_DOWN:
+                joyInputID = input.getPointerId(0);
+                joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                break;
             case MotionEvent.ACTION_MOVE:
+                index = input.findPointerIndex(joyInputID);
+                if (index != -1){
+                    joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_UP:
-                joyX = (input.getX() - drawView.getMarginX()) * ratio - size;
-                joyY = (input.getY() - drawView.getMarginY()) * ratio - size;
+                index = input.findPointerIndex(joyInputID);
+                if (input.getActionIndex() == index){
+                    joyStick.setMoveOff();
+                }
                 break;
             default:
                 break;
@@ -172,10 +171,10 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             }
             //circle draw.
             canvas.drawCircle(circleX, circleY, circleSize, Tools.colorPaint(0xff00ddff));
-            //Joystick draw.
             //drawView draw.
             viewCanvas.drawBitmap(bitmap, 0, 0, null);
-            viewCanvas.drawBitmap(jBitmap, joyX, joyY, null);
+            //Joystick draw.
+            joyStick.drawJoyStick(viewCanvas);
             drawView.update();
         }
     }
