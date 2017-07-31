@@ -191,8 +191,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 if (refX < refSize / 2) refX = refSize / 2;
                 if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
                 if (refY < refConstraintY) refY = refConstraintY;
-                if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY)
-                    refY = viewBitmapH - bufBitmap_Ref.getHeight();
+                if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY) refY = viewBitmapH - bufBitmap_Ref.getHeight();
                 //circle moving.
                 for (int loop1 = 0; loop1 < sendNum; loop1++) {
                     circleX += circleVX;
@@ -207,9 +206,9 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                     if (circleY < circleSize) {
                         circleY = 2 * circleSize - circleY;
                         circleVY *= -1;
-                    } else if (circleY > refY && circleVY > 0) {
-                        int refHitSize = (refSize + circleSize) / 2;
-                        if (refX - refHitSize < circleX && circleX < refX + refHitSize) {//circle hits reflector(Not perfact).
+                    } else if (circleY + circleSize > refY && circleVY > 0) {
+                        int refHitSize = refSize / 2 + circleSize;
+                        if (refX - refHitSize < circleX && circleX < refX + refHitSize) {
                             int hitPos = circleX - refX;
                             circleVX *= -1;//default reflect.
                             if (hitPos != 0) {
@@ -226,7 +225,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                                 circleSpeed += 0.1;
                                 circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
                             }
-                        } else {
+                        } else if (circleY > refY) {
                             gameState = 2;
                         }
                     }
