@@ -53,14 +53,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     }
     void init(){
         (mHolder = getHolder()).addCallback(this);
-        fpsPaint = new Paint(){
-          Paint mySet(){
-              setColor(0xffff7777);
-              setStyle(Style.FILL);
-              setTextSize(50);
-              return this;
-          }
-        }.mySet();
+        fpsPaint = Tools.textPaint(0xffff7777, 40);
     }
     public Canvas setBitmap(Bitmap input) {
         if (input != null){
@@ -151,7 +144,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                             viewCanvas.drawBitmap(saveBitmap, null, rect, null);
                         }
                         if (fpsOutput){
-                            viewCanvas.drawText(String.format("%5.2f", framePerSec), 0, 50, fpsPaint);
+                            viewCanvas.drawText(String.format("FPS:%5.2f", framePerSec), 0, viewCanvas.getHeight(), fpsPaint);
                         }
                     }
                 }

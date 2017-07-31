@@ -103,7 +103,7 @@ public class JoyStick {
                 disX = disX * radius / distance; disY = disY * radius / distance;
                 centerX = nowX - (float)disX; centerY = nowY - (float)disY;
             }
-            else if (distance < radius / 10){//too small distance --> no move.
+            else if (distance < radius / 30){//too small distance --> no move.
                 nowX = centerX; nowY = centerY;
             }
         }

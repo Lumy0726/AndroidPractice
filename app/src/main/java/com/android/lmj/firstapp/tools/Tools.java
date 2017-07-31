@@ -59,6 +59,13 @@ public class Tools {
         }
         return paint;
     }
+    public static Paint textPaint(int color, float textSize){
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setTextSize(textSize);
+        return paint;
+    }
     public static Paint alphaMultiplyPaint(int alpha){
         Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));

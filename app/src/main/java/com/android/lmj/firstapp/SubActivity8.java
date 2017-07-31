@@ -2,6 +2,7 @@ package com.android.lmj.firstapp;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //Timer value
     Timer multimediaTimer;
     static final int TIMERID_MAIN = 0;
+    //game state value
+    int gameState;
     //JoyStick value
     JoyStick joyStick;
     int joyInputID;
@@ -47,6 +50,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     int circleX, circleY;
     int circleVX, circleVY;
     float circleSpeed;
+    String circleSpeedStr;
     int circleSize, constraintX;
     //reflector value
     int refX, refY, refSize, refConstraintY;
@@ -93,6 +97,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         //circle value.
         circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
         circleSpeed = 25;
+        circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
         circleVX = 0; circleVY = (int)circleSpeed;
         //ref value
         refX = (viewBitmapW + refSize) / 2; refY = (viewBitmapH + refConstraintY) / 2;
@@ -100,7 +105,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         viewCanvas.drawColor(0xffffffff);
         bitmap = Bitmap.createBitmap(viewBitmap);
         canvas.setBitmap(bitmap);
-        //Joystick reset.
+        gameState = 1;
     }
     void bufBitmapDraw(){
         Canvas bufCanvas = new Canvas();
@@ -171,70 +176,83 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     public void onTimer(int id, int sendNum) {
         if (id == TIMERID_MAIN){
             //androidLog(sendNum + "");
-            //circle delete.
-            //canvas.drawRect(Tools.rectWH(circleX - circleSize, circleY - circleSize, bufBitmap_Circle.getWidth(), bufBitmap_Circle.getHeight()), Tools.colorPaint(0xffffffff, true));
-            //ref delete.
-            //canvas.drawRect(Tools.rectWH(refX - refSize / 2, refY, bufBitmap_Ref.getWidth(), bufBitmap_Ref.getHeight()), Tools.colorPaint(0xffffffff, true));
+            if (gameState == 1) {
+                //circle delete.
+                //canvas.drawRect(Tools.rectWH(circleX - circleSize, circleY - circleSize, bufBitmap_Circle.getWidth(), bufBitmap_Circle.getHeight()), Tools.colorPaint(0xffffffff, true));
+                //ref delete.
+                //canvas.drawRect(Tools.rectWH(refX - refSize / 2, refY, bufBitmap_Ref.getWidth(), bufBitmap_Ref.getHeight()), Tools.colorPaint(0xffffffff, true));
 
-            //delete all.
-            Tools.resetBitmap(canvas, 0xffffffff);
-            //ref moving.
-            int refMoveX = (int)(joyStick.getMoveX() * circleSpeed * sendNum), refMoveY = (int)(joyStick.getMoveY() * circleSpeed * sendNum);
-            refX += refMoveX; refY += refMoveY;
-            if (refX < refSize / 2) refX = refSize / 2;
-            if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
-            if (refY < refConstraintY) refY = refConstraintY;
-            if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY) refY = viewBitmapH - bufBitmap_Ref.getHeight();
-            //circle moving.
-            for (int loop1 = 0; loop1 < sendNum; loop1++){
-                circleX += circleVX; circleY += circleVY;
-                if (circleX < circleSize){
-                    circleX = 2 * circleSize - circleX;
-                    circleVX *= -1;
-                }
-                else if(circleX > constraintX){
-                    circleX = 2 * constraintX - circleX;
-                    circleVX *= -1;
-                }
-                if (circleY < circleSize){
-                    circleY = 2 * circleSize - circleY;
-                    circleVY *= -1;
-                }
-                else if(circleY > refY && circleVY > 0){
-                    int refHitSize = (refSize + circleSize) / 2;
-                    if (refX - refHitSize < circleX && circleX < refX + refHitSize){//circle hits reflector(Not perfact).
-                        int hitPos = circleX - refX;
-                        circleVX *= -1;//default reflect.
-                        if (hitPos != 0){
-                            int maxX = (int)(circleSpeed * 8 / 9);
-                            if (hitPos > 0){
-                                circleVX += (maxX - circleVX) * hitPos / refHitSize;
-                            }
-                            else {
-                                circleVX += (maxX + circleVX) * hitPos / refHitSize;
-                            }
-                            circleVY = (int)Math.sqrt((double)(circleSpeed * circleSpeed - circleVX * circleVX));
-                        }
+                //delete all.
+                Tools.resetBitmap(canvas, 0xffffffff);
+                //ref moving.
+                int refMoveX = (int) (joyStick.getMoveX() * circleSpeed * sendNum), refMoveY = (int) (joyStick.getMoveY() * circleSpeed * sendNum);
+                refX += refMoveX;
+                refY += refMoveY;
+                if (refX < refSize / 2) refX = refSize / 2;
+                if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
+                if (refY < refConstraintY) refY = refConstraintY;
+                if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY)
+                    refY = viewBitmapH - bufBitmap_Ref.getHeight();
+                //circle moving.
+                for (int loop1 = 0; loop1 < sendNum; loop1++) {
+                    circleX += circleVX;
+                    circleY += circleVY;
+                    if (circleX < circleSize) {
+                        circleX = 2 * circleSize - circleX;
+                        circleVX *= -1;
+                    } else if (circleX > constraintX) {
+                        circleX = 2 * constraintX - circleX;
+                        circleVX *= -1;
+                    }
+                    if (circleY < circleSize) {
+                        circleY = 2 * circleSize - circleY;
                         circleVY *= -1;
-                        if (circleSpeed < 40) circleSpeed += 0.1;
-                    }
-                    else {
-                        reset();
+                    } else if (circleY > refY && circleVY > 0) {
+                        int refHitSize = (refSize + circleSize) / 2;
+                        if (refX - refHitSize < circleX && circleX < refX + refHitSize) {//circle hits reflector(Not perfact).
+                            int hitPos = circleX - refX;
+                            circleVX *= -1;//default reflect.
+                            if (hitPos != 0) {
+                                int maxX = (int) (circleSpeed * 8 / 9);
+                                if (hitPos > 0) {
+                                    circleVX += (maxX - circleVX) * hitPos / refHitSize;
+                                } else {
+                                    circleVX += (maxX + circleVX) * hitPos / refHitSize;
+                                }
+                                circleVY = (int) Math.sqrt((double) (circleSpeed * circleSpeed - circleVX * circleVX));
+                            }
+                            circleVY *= -1;
+                            if (circleSpeed < 40) {
+                                circleSpeed += 0.1;
+                                circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
+                            }
+                        } else {
+                            gameState = 2;
+                        }
                     }
                 }
+                //bottomLine draw.
+                canvas.drawBitmap(bufBitmap_BottomLine, 0, refConstraintY, null);
+                //circleSpeed Draw.
+                canvas.drawText(circleSpeedStr, 0, Tools.dipToPix(30) * viewRatio, Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio));
+                //circle draw.
+                canvas.drawBitmap(bufBitmap_Circle, circleX - circleSize, circleY - circleSize, null);
+                //ref draw.
+                canvas.drawBitmap(bufBitmap_Ref, refX - refSize / 2, refY, null);
+                //drawView draw.
+                viewCanvas.drawBitmap(bitmap, 0, 0, Tools.forcePaint());
+                //Joystick draw.
+                joyStick.drawJoyStick(viewCanvas);
+                //drawView update.
+                drawView.update();
             }
-            //bottomLine draw.
-            canvas.drawBitmap(bufBitmap_BottomLine, 0, refConstraintY, null);
-            //circle draw.
-            canvas.drawBitmap(bufBitmap_Circle, circleX - circleSize, circleY - circleSize, null);
-            //ref draw.
-            canvas.drawBitmap(bufBitmap_Ref, refX - refSize / 2, refY, null);
-            //drawView draw.
-            viewCanvas.drawBitmap(bitmap, 0, 0, Tools.forcePaint());
-            //Joystick draw.
-            joyStick.drawJoyStick(viewCanvas);
-            //drawView update.
-            drawView.update();
+            else if (gameState == 2){
+                Paint paint = Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio);
+                paint.setTextAlign(Paint.Align.CENTER);
+                viewCanvas.drawText("Game Over", viewBitmapW / 2, viewBitmapH / 2 + Tools.dipToPix(15) * viewRatio, paint);
+                drawView.update();
+                gameState = 0;
+            }
         }
     }
 }
