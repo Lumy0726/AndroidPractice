@@ -14,7 +14,7 @@ import com.android.lmj.firstapp.tools.Tools;
 //TODO
 public class JoyStick {
     //JoyStick`s normal size value.
-    static float normalRadius = Tools.dipToPix(80), normalWide = Tools.dipToPix(20);
+    static float normalRadius = Tools.dipToPix(60), normalWide = Tools.dipToPix(15);
     public static void resetNormalRadius(DisplayMetrics input){
         Tools.dipToPixInit(input); normalRadius = Tools.dipToPix(80); normalWide = Tools.dipToPix(20);
     }
@@ -63,7 +63,7 @@ public class JoyStick {
     //initial, reset.
     protected void init(){
         //prevent worng(small) value.
-        if (radius <= 20){ radius = 20;}
+        if (radius <= 10){ radius = 10;}
         if (wide > radius){ wide = radius / 4; }
         //JoyBitmap create.
         joyBitmap = Bitmap.createBitmap((radius + wide) * 2, (radius + wide) * 2, Bitmap.Config.ARGB_8888);
@@ -81,8 +81,8 @@ public class JoyStick {
     //---? method
     protected void drawJoy(){
         int middle = radius + wide;
-        Tools.resetCanvas(joyBitmapCanvas).drawCircle(middle, middle, radius, Tools.colorPaint(backColor));
-        joyBitmapCanvas.drawCircle(middle, middle, radius - wide, Tools.alphaPaint(0));
+        Tools.resetBitmap(joyBitmapCanvas, 0).drawCircle(middle, middle, radius, Tools.colorPaint(backColor));
+        joyBitmapCanvas.drawCircle(middle, middle, radius - wide, Tools.colorPaint(0, true));
         joyBitmapCanvas.drawCircle(middle, middle, wide / 2, Tools.colorPaint(backColor));
     }
 

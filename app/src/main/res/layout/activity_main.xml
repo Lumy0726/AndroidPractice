@@ -167,7 +167,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:onClick="onButton_NewActivity8"
-                android:text="Draw, Touch"
+                android:text="Simple game"
                 app:layout_constraintLeft_toLeftOf="@+id/guideline4"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button28" />

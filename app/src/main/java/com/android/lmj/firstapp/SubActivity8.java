@@ -16,6 +16,9 @@ import com.android.lmj.firstapp.timer.Timer;
 import com.android.lmj.firstapp.view.SurfaceDrawView;
 
 import com.android.lmj.firstapp.tools.Tools;
+
+import java.util.Vector;
+
 import static com.android.lmj.firstapp.log.LogSystem.androidLog;
 
 
@@ -32,6 +35,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //bitmap value
     Bitmap bitmap;
     Canvas canvas;
+    Bitmap bufBitmap_Circle, bufBitmap_Ref, bufBitmap_BottomLine;
     //drawView value
     Bitmap viewBitmap;
     Canvas viewCanvas;
@@ -42,7 +46,10 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //circle value
     int circleX, circleY;
     int circleVX, circleVY;
-    int circleSize, constraintX, constraintY;
+    float circleSpeed;
+    int circleSize, constraintX;
+    //reflector value
+    int refX, refY, refSize, refConstraintY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +76,13 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             viewMarginX = drawView.getMarginX(); viewMarginY = drawView.getMarginY();
             //joyStick initialize.
             joyStick = new JoyStick(viewRatio);
+            //circle value
+            circleSize = viewBitmapW / 20;
+            constraintX = viewBitmapW - circleSize;
+            //ref value
+            refConstraintY = viewBitmapH * 8 / 9;
+            refSize = viewBitmapW / 3;
+            bufBitmapDraw();
             //initialize.
             reset();
             drawView.update();
@@ -78,16 +92,27 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     void reset(){
         //circle value.
         circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
-        circleVX = 0; circleVY = 20;
-        circleSize = viewBitmapW / 20;
-        constraintX = viewBitmapW - circleSize;
-        constraintY = viewBitmapH - circleSize;
+        circleSpeed = 25;
+        circleVX = 0; circleVY = (int)circleSpeed;
+        //ref value
+        refX = (viewBitmapW + refSize) / 2; refY = (viewBitmapH + refConstraintY) / 2;
         //bitmap reset.
         viewCanvas.drawColor(0xffffffff);
         bitmap = Bitmap.createBitmap(viewBitmap);
         canvas.setBitmap(bitmap);
         //Joystick reset.
-        joyStick.setMoveOff(viewBitmapW / (float)2, viewBitmapH / (float)2);
+    }
+    void bufBitmapDraw(){
+        Canvas bufCanvas = new Canvas();
+        bufCanvas.setBitmap(bufBitmap_Circle = Bitmap.createBitmap(circleSize * 2, circleSize * 2, Bitmap.Config.ARGB_8888));
+        bufCanvas.drawCircle(circleSize, circleSize, circleSize, Tools.colorPaint(0xff00ddff));
+        bufCanvas.setBitmap(bufBitmap_BottomLine = Bitmap.createBitmap(viewBitmapW, (int) Tools.dipToPix(5), Bitmap.Config.ARGB_8888));
+        bufCanvas.drawColor(0x227f00ff);
+        bufCanvas.setBitmap(bufBitmap_Ref = Bitmap.createBitmap(refSize, (int) Tools.dipToPix(10), Bitmap.Config.ARGB_8888));
+        int radius = bufCanvas.getHeight() / 2;
+        bufCanvas.drawCircle(radius, radius, radius, Tools.colorPaint(0xffff0000));
+        bufCanvas.drawCircle(bufCanvas.getWidth() - radius, radius, radius, Tools.colorPaint(0xffff0000));
+        bufCanvas.drawRect(radius, 0, bufCanvas.getWidth() - radius, bufCanvas.getHeight(), Tools.colorPaint(0xffff0000));
     }
     @Override
     protected void onPause() {
@@ -147,7 +172,19 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         if (id == TIMERID_MAIN){
             //androidLog(sendNum + "");
             //circle delete.
-            canvas.drawCircle(circleX, circleY, circleSize, Tools.colorPaint(0xffffffff));
+            //canvas.drawRect(Tools.rectWH(circleX - circleSize, circleY - circleSize, bufBitmap_Circle.getWidth(), bufBitmap_Circle.getHeight()), Tools.colorPaint(0xffffffff, true));
+            //ref delete.
+            //canvas.drawRect(Tools.rectWH(refX - refSize / 2, refY, bufBitmap_Ref.getWidth(), bufBitmap_Ref.getHeight()), Tools.colorPaint(0xffffffff, true));
+
+            //delete all.
+            Tools.resetBitmap(canvas, 0xffffffff);
+            //ref moving.
+            int refMoveX = (int)(joyStick.getMoveX() * circleSpeed * sendNum), refMoveY = (int)(joyStick.getMoveY() * circleSpeed * sendNum);
+            refX += refMoveX; refY += refMoveY;
+            if (refX < refSize / 2) refX = refSize / 2;
+            if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
+            if (refY < refConstraintY) refY = refConstraintY;
+            if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY) refY = viewBitmapH - bufBitmap_Ref.getHeight();
             //circle moving.
             for (int loop1 = 0; loop1 < sendNum; loop1++){
                 circleX += circleVX; circleY += circleVY;
@@ -163,18 +200,40 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                     circleY = 2 * circleSize - circleY;
                     circleVY *= -1;
                 }
-                else if(circleY > constraintY){
-                    circleY = 2 * constraintY - circleY;
-                    circleVY *= -1;
-                    circleVX = (int)(Math.random() * 81) - 40;
+                else if(circleY > refY && circleVY > 0){
+                    int refHitSize = (refSize + circleSize) / 2;
+                    if (refX - refHitSize < circleX && circleX < refX + refHitSize){//circle hits reflector(Not perfact).
+                        int hitPos = circleX - refX;
+                        circleVX *= -1;//default reflect.
+                        if (hitPos != 0){
+                            int maxX = (int)(circleSpeed * 8 / 9);
+                            if (hitPos > 0){
+                                circleVX += (maxX - circleVX) * hitPos / refHitSize;
+                            }
+                            else {
+                                circleVX += (maxX + circleVX) * hitPos / refHitSize;
+                            }
+                            circleVY = (int)Math.sqrt((double)(circleSpeed * circleSpeed - circleVX * circleVX));
+                        }
+                        circleVY *= -1;
+                        if (circleSpeed < 40) circleSpeed += 0.1;
+                    }
+                    else {
+                        reset();
+                    }
                 }
             }
+            //bottomLine draw.
+            canvas.drawBitmap(bufBitmap_BottomLine, 0, refConstraintY, null);
             //circle draw.
-            canvas.drawCircle(circleX, circleY, circleSize, Tools.colorPaint(0xff00ddff));
+            canvas.drawBitmap(bufBitmap_Circle, circleX - circleSize, circleY - circleSize, null);
+            //ref draw.
+            canvas.drawBitmap(bufBitmap_Ref, refX - refSize / 2, refY, null);
             //drawView draw.
-            viewCanvas.drawBitmap(bitmap, 0, 0, null);
+            viewCanvas.drawBitmap(bitmap, 0, 0, Tools.forcePaint());
             //Joystick draw.
             joyStick.drawJoyStick(viewCanvas);
+            //drawView update.
             drawView.update();
         }
     }

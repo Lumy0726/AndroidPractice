@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -30,19 +31,35 @@ public class Tools {
         }
         return (float)0;
     }
-    //Canvas, Bitmap, Paint.
-    public static Paint colorPaint(int color){
+    //Canvas, Bitmap, Paint, Rect.
+    public static Rect rectWH(int x, int y, int w, int h){
+        return new Rect(x, y, x + w, y + h);
+    }
+    public static Paint forcePaint(){
+        Paint paint = new Paint();
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+        return paint;
+    }
+    public static Paint colorPaint(int color){ return colorPaint(color, false); }
+    public static Paint colorPaint(int color, boolean forceSet){
         Paint colorPaint = new Paint();
         colorPaint.setColor(color);
+        if (forceSet){
+            colorPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+        }
         return colorPaint;
     }
-    public static Paint linePaint(int color, int width){
+    public static Paint linePaint(int color, int width){ return linePaint(color, width, false); }
+    public static Paint linePaint(int color, int width, boolean forceSet){
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStrokeWidth(width);
+        if (forceSet){
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+        }
         return paint;
     }
-    public static Paint alphaPaint(int alpha){
+    public static Paint alphaMultiplyPaint(int alpha){
         Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
         paint.setColor(alpha << 24);
@@ -60,9 +77,12 @@ public class Tools {
         }
         return bitmap;
     }
-    public static Canvas setAlpha(Canvas canvas, int alpha){
-        canvas.drawColor(alpha << 24, PorterDuff.Mode.DST_IN);
+    public static Canvas multiplyARGB(Canvas canvas, int multi){
+        canvas.drawColor(multi << 24, PorterDuff.Mode.DST_IN);
         return canvas;
     }
-    public static Canvas resetCanvas(Canvas canvas){ return setAlpha(canvas, 0); }
+    public static Canvas resetBitmap(Canvas canvas, int color){
+        canvas.drawColor(color, PorterDuff.Mode.SRC);
+        return canvas;
+    }
 }
