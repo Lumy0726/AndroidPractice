@@ -38,7 +38,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //bitmap value
     Bitmap bitmap;
     Canvas canvas;
-    Bitmap bufBitmap_Circle, bufBitmap_Ref, bufBitmap_BottomLine;
+    Bitmap bufBitmap_Circle, bufBitmap_Ref, bufBitmap_RefLine;
     //drawView value
     Bitmap viewBitmap;
     Canvas viewCanvas;
@@ -53,7 +53,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     String circleSpeedStr;
     int circleSize, constraintX;
     //reflector value
-    int refX, refY, refSize, refConstraintY;
+    int refX, refY, refSize, refConstraintTopY, refConstraintBottomY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         onCreateFlag = true;
         //make viewBitmap, get drawView, set Timer.
         canvas = new Canvas();
-        viewBitmap = Bitmap.createBitmap(600, 800, Bitmap.Config.ARGB_8888);
+        viewBitmap = Bitmap.createBitmap(600, 900, Bitmap.Config.ARGB_8888);
         viewBitmapW = viewBitmap.getWidth(); viewBitmapH = viewBitmap.getHeight();
         drawView = (SurfaceDrawView) findViewById(R.id.drawOutput);
         drawView.setFpsOutput(true);
@@ -84,7 +84,8 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             circleSize = viewBitmapW / 20;
             constraintX = viewBitmapW - circleSize;
             //ref value
-            refConstraintY = viewBitmapH * 8 / 9;
+            refConstraintBottomY = viewBitmapH * 8 / 9;
+            refConstraintTopY = viewBitmapH * 7 / 9;
             refSize = viewBitmapW / 3;
             bufBitmapDraw();
             //initialize.
@@ -95,25 +96,27 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     }
     void reset(){
         //circle value.
-        circleX = viewBitmapW / 2; circleY = viewBitmapH / 2;
-        circleSpeed = 25;
+        circleX = viewBitmapW / 2; circleY = circleSize;
+        circleSpeed = 20;
         circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
         circleVX = 0; circleVY = (int)circleSpeed;
         //ref value
-        refX = (viewBitmapW + refSize) / 2; refY = (viewBitmapH + refConstraintY) / 2;
+        refX = (viewBitmapW + refSize) / 2; refY = (refConstraintTopY + refConstraintBottomY) / 2;
         //bitmap reset.
         viewCanvas.drawColor(0xffffffff);
         bitmap = Bitmap.createBitmap(viewBitmap);
         canvas.setBitmap(bitmap);
         gameState = 1;
+        //
+        joyStick.setMoveOff();
     }
     void bufBitmapDraw(){
         Canvas bufCanvas = new Canvas();
         bufCanvas.setBitmap(bufBitmap_Circle = Bitmap.createBitmap(circleSize * 2, circleSize * 2, Bitmap.Config.ARGB_8888));
         bufCanvas.drawCircle(circleSize, circleSize, circleSize, Tools.colorPaint(0xff00ddff));
-        bufCanvas.setBitmap(bufBitmap_BottomLine = Bitmap.createBitmap(viewBitmapW, (int) Tools.dipToPix(5), Bitmap.Config.ARGB_8888));
+        bufCanvas.setBitmap(bufBitmap_RefLine = Bitmap.createBitmap(viewBitmapW, viewBitmapH / 9 / 6, Bitmap.Config.ARGB_8888));
         bufCanvas.drawColor(0x227f00ff);
-        bufCanvas.setBitmap(bufBitmap_Ref = Bitmap.createBitmap(refSize, (int) Tools.dipToPix(10), Bitmap.Config.ARGB_8888));
+        bufCanvas.setBitmap(bufBitmap_Ref = Bitmap.createBitmap(refSize, (refSize / 16) * 2, Bitmap.Config.ARGB_8888));
         int radius = bufCanvas.getHeight() / 2;
         bufCanvas.drawCircle(radius, radius, radius, Tools.colorPaint(0xffff0000));
         bufCanvas.drawCircle(bufCanvas.getWidth() - radius, radius, radius, Tools.colorPaint(0xffff0000));
@@ -190,8 +193,8 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 refY += refMoveY;
                 if (refX < refSize / 2) refX = refSize / 2;
                 if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
-                if (refY < refConstraintY) refY = refConstraintY;
-                if (viewBitmapH - bufBitmap_Ref.getHeight() <= refY) refY = viewBitmapH - bufBitmap_Ref.getHeight();
+                if (refY < refConstraintTopY) refY = refConstraintTopY;
+                if (refConstraintBottomY <= refY + bufBitmap_Ref.getHeight()) refY = refConstraintBottomY - bufBitmap_Ref.getHeight();
                 //circle moving.
                 for (int loop1 = 0; loop1 < sendNum; loop1++) {
                     circleX += circleVX;
@@ -210,28 +213,29 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                         int refHitSize = refSize / 2 + circleSize;
                         if (refX - refHitSize < circleX && circleX < refX + refHitSize) {
                             int hitPos = circleX - refX;
+                            if (circleSpeed < 40) {
+                                circleSpeed += 0.1;
+                                circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
+                            }
                             circleVX *= -1;//default reflect.
-                            if (hitPos != 0) {
+                            if (hitPos != 0) {//angle change reflect.
                                 int maxX = (int) (circleSpeed * 8 / 9);
                                 if (hitPos > 0) {
                                     circleVX += (maxX - circleVX) * hitPos / refHitSize;
                                 } else {
                                     circleVX += (maxX + circleVX) * hitPos / refHitSize;
                                 }
-                                circleVY = (int) Math.sqrt((double) (circleSpeed * circleSpeed - circleVX * circleVX));
                             }
-                            circleVY *= -1;
-                            if (circleSpeed < 40) {
-                                circleSpeed += 0.1;
-                                circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
-                            }
+                            circleVX += (int)(Math.random() * 3) - 1;//random angle change(for preventing infinity loop).
+                            circleVY = -1 * (int) Math.round(Math.sqrt((double) (circleSpeed * circleSpeed - circleVX * circleVX)));
                         } else if (circleY > refY) {
                             gameState = 2;
                         }
                     }
                 }
-                //bottomLine draw.
-                canvas.drawBitmap(bufBitmap_BottomLine, 0, refConstraintY, null);
+                //refLine draw.
+                canvas.drawBitmap(bufBitmap_RefLine, 0, refConstraintTopY - bufBitmap_RefLine.getHeight(), null);
+                canvas.drawBitmap(bufBitmap_RefLine, 0, refConstraintBottomY, null);
                 //circleSpeed Draw.
                 canvas.drawText(circleSpeedStr, 0, Tools.dipToPix(30) * viewRatio, Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio));
                 //circle draw.
@@ -248,7 +252,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             else if (gameState == 2){
                 Paint paint = Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio);
                 paint.setTextAlign(Paint.Align.CENTER);
-                viewCanvas.drawText("Game Over", viewBitmapW / 2, viewBitmapH / 2 + Tools.dipToPix(15) * viewRatio, paint);
+                viewCanvas.drawText("Game Over", viewBitmapW / 2, viewBitmapH / 2, paint);
                 drawView.update();
                 gameState = 0;
             }

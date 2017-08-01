@@ -51,11 +51,20 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
         super(context, att);
         init();
     }
-    void init(){
+    protected void init(){
         (mHolder = getHolder()).addCallback(this);
         fpsPaint = Tools.textPaint(0xffff7777, 40);
     }
-    public Canvas setBitmap(Bitmap input) {
+    public Canvas setBitmap(Bitmap input, boolean left){
+        if (left){
+            return setBitmap(input, -1);
+        }
+        return setBitmap(input, 1);
+    }
+    public Canvas setBitmap(Bitmap input){
+        return setBitmap(input, 0);
+    }
+    protected Canvas setBitmap(Bitmap input, int bias) {
         if (input != null){
             synchronized(this){
                 bitmap = input;
@@ -65,14 +74,25 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
                 int bitH = bitmap.getHeight();
                 float margin = w - (float)bitW * h / bitH;
                 if (margin > 0){
-                    marginX = (int)(margin / 2);
-                    rect = new Rect(marginX, 0, w - marginX, h);
+                    switch(bias){
+                        case -1:
+                            marginX = 0;
+                            rect = new Rect(0, 0, w - (int)margin, h);
+                            break;
+                        case 0:
+                            marginX = (int)(margin / 2);
+                            rect = new Rect(marginX, 0, w - marginX, h);
+                            break;
+                        case 1:
+                            marginX = (int)margin;
+                            rect = new Rect(marginX, 0, w, h);
+                            break;
+                    }
                     ratio = bitH / (float)h;
                 }
                 else {
-                    margin = h - (float)bitH * w / bitW;
-                    marginY = (int)(margin / 2);
-                    rect = new Rect(0, marginY, w, h - marginY);
+                    marginY = h - (int)((float)bitH * w / bitW);
+                    rect = new Rect(0, marginY, w, h);
                     ratio = bitW / (float)w;
                 }
                 canvas = new Canvas();
@@ -130,7 +150,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) { thread.off(); }
     //Call in another thread.
-    void reDraw(){
+    protected void reDraw(){
         Canvas viewCanvas = null;
         if (updateState){
             updateState = false;
@@ -168,7 +188,7 @@ class ViewThread extends Thread{
     volatile boolean state = true;
     SurfaceDrawView sdView;
     ViewThread(SurfaceDrawView input){ sdView = input; }
-    void off() {
+    protected void off() {
         state = false;
         boolean retry = true;
         while (retry) {
