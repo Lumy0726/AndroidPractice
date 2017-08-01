@@ -4,11 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.lmj.firstapp.joystick.JoyStick;
@@ -30,9 +33,14 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     //Timer value
     Timer multimediaTimer;
     static final int TIMERID_MAIN = 0;
-    //game state value
+    //game state, option value
     int gameState;
-    //JoyStick value
+    int controlOption;
+    final int CONTROL_NORMAL = 0;
+    final int CONTROL_JOYSTICK = 1;
+    //CONTROL_NORMAL value
+    int touchX, touchY;
+    //CONTROL_JOYSTICK value
     JoyStick joyStick;
     int joyInputID;
     //bitmap value
@@ -78,8 +86,6 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             viewCanvas = drawView.setBitmap(viewBitmap);
             viewRatio = drawView.getRatio();
             viewMarginX = drawView.getMarginX(); viewMarginY = drawView.getMarginY();
-            //joyStick initialize.
-            joyStick = new JoyStick(viewRatio);
             //circle value
             circleSize = viewBitmapW / 20;
             constraintX = viewBitmapW - circleSize;
@@ -87,10 +93,35 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
             refConstraintBottomY = viewBitmapH * 8 / 9;
             refConstraintTopY = viewBitmapH * 7 / 9;
             refSize = viewBitmapW / 3;
+            //joyStick initialize.
+            joyStick = new JoyStick(viewRatio);
+            joyStick.setMoveOff(viewBitmapW / 2, refConstraintBottomY);
+            //butBitmapDraw
             bufBitmapDraw();
             //initialize.
-            reset();
+            gameState = 0;//game is stop(wait for user input).
+            //controlOption_layout setting
+            int buttonW = findViewById(R.id.controlOption_Layout).getWidth();
+            Button button = (Button) findViewById(R.id.controlOption_Button0);
+            button.setWidth(buttonW);
+            button.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    setControl(CONTROL_NORMAL);
+                }
+            });
+            button = (Button) findViewById(R.id.controlOption_Button1);
+            button.setWidth(buttonW);
+            button.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    setControl(CONTROL_JOYSTICK);
+                }
+            });
+            //drawView update.
+            Tools.resetBitmap(viewCanvas, 0xffffffff);
             drawView.update();
+            //Timer start.
             multimediaTimer.add(TIMERID_MAIN, 16);
         }
     }
@@ -107,8 +138,16 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
         bitmap = Bitmap.createBitmap(viewBitmap);
         canvas.setBitmap(bitmap);
         gameState = 1;
-        //
+        //control reset.
+        touchX = refX; touchY = refY;
         joyStick.setMoveOff();
+    }
+    void setControl(int control){
+        controlOption = control;
+        ConstraintLayout rootLayout = (ConstraintLayout) findViewById(R.id.drawViewContainer);
+        LinearLayout controlLayout = (LinearLayout) rootLayout.findViewById(R.id.controlOption_Layout);
+        rootLayout.removeView(controlLayout);
+        reset();
     }
     void bufBitmapDraw(){
         Canvas bufCanvas = new Canvas();
@@ -151,28 +190,42 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
     @Override
     public boolean touchEvent(MotionEvent input) {
         int index;
-        switch(input.getActionMasked()){
+        switch (input.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 joyInputID = input.getPointerId(0);
-                joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                if (controlOption == CONTROL_NORMAL){
+                    touchX = (int)((input.getX() - viewMarginX) * viewRatio);
+                    touchY = (int)((input.getY() - viewMarginY) * viewRatio);
+                }
+                else if (controlOption == CONTROL_JOYSTICK){
+                    joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 index = input.findPointerIndex(joyInputID);
-                if (index != -1){
-                    joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                if (index != -1) {
+                    if (controlOption == CONTROL_NORMAL) {
+                        touchX = (int) ((input.getX() - viewMarginX) * viewRatio);
+                        touchY = (int) ((input.getY() - viewMarginY) * viewRatio);
+                    } else if (controlOption == CONTROL_JOYSTICK) {
+                        joyStick.setMove((input.getX() - viewMarginX) * viewRatio, (input.getY() - viewMarginY) * viewRatio);
+                    }
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_UP:
                 index = input.findPointerIndex(joyInputID);
-                if (input.getActionIndex() == index){
-                    joyStick.setMoveOff();
+                if (input.getActionIndex() == index) {
+                    if (controlOption == CONTROL_NORMAL) {
+                        touchX = refX; touchY = refY;
+                    } else if (controlOption == CONTROL_JOYSTICK) {
+                        joyStick.setMoveOff();
+                    }
                 }
                 break;
             default:
                 break;
         }
-        //androidLog("X:" + input.getX() + " Y:" + input.getY());
         return true;
     }
     @Override
@@ -188,9 +241,25 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 //delete all.
                 Tools.resetBitmap(canvas, 0xffffffff);
                 //ref moving.
-                int refMoveX = (int) (joyStick.getMoveX() * circleSpeed * sendNum), refMoveY = (int) (joyStick.getMoveY() * circleSpeed * sendNum);
-                refX += refMoveX;
-                refY += refMoveY;
+                if (controlOption == CONTROL_NORMAL){
+                    int dx = touchX - refX, dy = touchY - refY;
+                    if (dx != 0 || dy != 0){
+                        double distance = Math.sqrt(dx*dx + dy*dy);
+                        if (distance > circleSpeed){
+                            dx = (int)(dx * circleSpeed / distance);
+                            dy = (int)(dy * circleSpeed / distance);
+                            refX += dx; refY += dy;
+                        }
+                        else {
+                            refX = touchX; refY = touchY;
+                        }
+                    }
+                }
+                else if (controlOption == CONTROL_JOYSTICK){
+                    int refMoveX = (int) (joyStick.getMoveX() * circleSpeed * sendNum), refMoveY = (int) (joyStick.getMoveY() * circleSpeed * sendNum);
+                    refX += refMoveX;
+                    refY += refMoveY;
+                }
                 if (refX < refSize / 2) refX = refSize / 2;
                 if (viewBitmapW - refSize / 2 < refX) refX = viewBitmapW - refSize / 2;
                 if (refY < refConstraintTopY) refY = refConstraintTopY;
@@ -213,7 +282,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                         int refHitSize = refSize / 2 + circleSize;
                         if (refX - refHitSize < circleX && circleX < refX + refHitSize) {
                             int hitPos = circleX - refX;
-                            if (circleSpeed < 40) {
+                            if (circleSpeed < 60) {
                                 circleSpeed += 0.1;
                                 circleSpeedStr = String.format("SPEED: %4.1f", circleSpeed);
                             }
@@ -245,7 +314,9 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 //drawView draw.
                 viewCanvas.drawBitmap(bitmap, 0, 0, Tools.forcePaint());
                 //Joystick draw.
-                joyStick.drawJoyStick(viewCanvas);
+                if (controlOption == CONTROL_JOYSTICK){
+                    joyStick.drawJoyStick(viewCanvas);
+                }
                 //drawView update.
                 drawView.update();
             }

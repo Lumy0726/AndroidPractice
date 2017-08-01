@@ -2,12 +2,14 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ff000000"
     tools:context="com.android.lmj.firstapp.SubActivity8">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/drawViewContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#ff000000"
@@ -24,6 +26,40 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/controlOption_Layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#ffffffff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
+            <TextView
+                android:id="@+id/controlOption_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="조작 방식을 선택하세요"
+                android:textSize="20dp"
+                android:textColor="#ff000000" />
+            <Button
+                android:id="@+id/controlOption_Button0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Touch"
+                android:textSize="20dp"
+                android:textColor="#ff000000"/>
+            <Button
+                android:id="@+id/controlOption_Button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JOYSTICK"
+                android:textSize="20dp"
+                android:textColor="#ff000000"/>
+        </LinearLayout>
+
     </android.support.constraint.ConstraintLayout>
 
     <Button
