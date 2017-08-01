@@ -158,10 +158,14 @@ public class MainActivity extends AppCompatActivity {
     }
     public void onButton_NewActivity7(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity7.class);
-        startActivityForResult(intent, REQUEST_CODE_ACT6);
+        startActivity(intent);
     }
     public void onButton_NewActivity8(View v){
         Intent intent = new Intent(getApplicationContext(), SubActivity8.class);
-        startActivityForResult(intent, REQUEST_CODE_ACT6);
+        startActivity(intent);
+    }
+    public void onButton_NewActivity9(View v){
+        Intent intent = new Intent(getApplicationContext(), SubActivity9.class);
+        startActivity(intent);
     }
 }

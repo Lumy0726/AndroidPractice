@@ -3,6 +3,7 @@ package com.android.lmj.firstapp;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +21,6 @@ import com.android.lmj.firstapp.timer.Timer;
 import com.android.lmj.firstapp.view.SurfaceDrawView;
 
 import com.android.lmj.firstapp.tools.Tools;
-
-import java.util.Vector;
 
 import static com.android.lmj.firstapp.log.LogSystem.androidLog;
 
@@ -314,7 +313,7 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 canvas.drawBitmap(bufBitmap_RefLine, 0, refConstraintTopY - bufBitmap_RefLine.getHeight(), null);
                 canvas.drawBitmap(bufBitmap_RefLine, 0, refConstraintBottomY, null);
                 //circleSpeed Draw.
-                canvas.drawText(circleSpeedStr, 0, Tools.dipToPix(30) * viewRatio, Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio));
+                canvas.drawText(circleSpeedStr, 0, Tools.dipToPix(30) * viewRatio, Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio, Paint.Align.LEFT));
                 //circle draw.
                 canvas.drawBitmap(bufBitmap_Circle, circleX - circleSize, circleY - circleSize, null);
                 //ref draw.
@@ -329,10 +328,10 @@ public class SubActivity8 extends AppCompatActivity implements TimerAble, Surfac
                 drawView.update();
             }
             else if (gameState == 2){
-                Paint paint = Tools.textPaint(0xffff7777, Tools.dipToPix(30) * viewRatio);
-                paint.setTextAlign(Paint.Align.CENTER);
+                int h = (int)(Tools.dipToPix(30) * viewRatio);
+                Paint paint = Tools.textPaint(0xffff7777, h, Paint.Align.CENTER);
                 String str = String.format("%dHit", hitNum);
-                viewCanvas.drawText("Game Over", viewBitmapW / 2, viewBitmapH / 2 - Tools.dipToPix(30) * viewRatio, paint);
+                viewCanvas.drawText("Game Over", viewBitmapW / 2, viewBitmapH / 2 - h, paint);
                 viewCanvas.drawText(str, viewBitmapW / 2, viewBitmapH / 2, paint);
                 drawView.update();
                 gameState = 0;

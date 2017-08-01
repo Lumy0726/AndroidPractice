@@ -59,11 +59,12 @@ public class Tools {
         }
         return paint;
     }
-    public static Paint textPaint(int color, float textSize){
+    public static Paint textPaint(int color, float textSize, Paint.Align align){
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
         paint.setTextSize(textSize);
+        paint.setTextAlign(align);
         return paint;
     }
     public static Paint alphaMultiplyPaint(int alpha){
@@ -71,6 +72,10 @@ public class Tools {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
         paint.setColor(alpha << 24);
         return paint;
+    }
+    public static Paint setXfermode(Paint input, PorterDuff.Mode mode){
+        input.setXfermode(new PorterDuffXfermode(mode));
+        return input;
     }
     public static Bitmap reverseAlpha(Bitmap bitmap){
         int w = bitmap.getWidth();

@@ -53,7 +53,7 @@ public class SurfaceDrawView extends SurfaceView implements SurfaceHolder.Callba
     }
     protected void init(){
         (mHolder = getHolder()).addCallback(this);
-        fpsPaint = Tools.textPaint(0xffff7777, 40);
+        fpsPaint = Tools.textPaint(0xffff7777, 40, Paint.Align.LEFT);
     }
     public Canvas setBitmap(Bitmap input, boolean left){
         if (left){
