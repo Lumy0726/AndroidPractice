@@ -1,5 +1,6 @@
 package com.android.lmj.firstapp.tools;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -9,13 +10,13 @@ import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.widget.Toast;
 
 /**
  * Created by LMJ on 2017-07-28.
  */
 
 public class Tools {
-
     static DisplayMetrics displayMetrics;
     //Tools_initial
     public static void tools_initial(AppCompatActivity input){
@@ -30,6 +31,10 @@ public class Tools {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, displayMetrics);
         }
         return (float)0;
+    }
+    //Toast.
+    public static void simpleToast(Context context, String str){
+        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
     }
     //Canvas, Bitmap, Paint, Rect.
     public static Rect rectWH(int x, int y, int w, int h){

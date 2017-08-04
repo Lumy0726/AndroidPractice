@@ -12,9 +12,9 @@ import com.android.lmj.firstapp.tools.Tools;
  */
 
 public class Button_Cancel extends AppCompatButton{
-    Button_Cancel(Context context){ super(context); }
-    Button_Cancel(Context context, AttributeSet att){ super(context, att); }
-    void resize(){
+    public Button_Cancel(Context context){ super(context); }
+    public Button_Cancel(Context context, AttributeSet att){ super(context, att); }
+    public void resize(){
         int w = getWidth(), h = getHeight();
         if (w > h){
             setWidth(h);
