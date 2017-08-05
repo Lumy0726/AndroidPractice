@@ -5,12 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.lmj.firstapp.tools.Tools;
 
@@ -94,7 +92,7 @@ public class SubActivity9 extends AppCompatActivity {
             fInS = new FileInputStream(new File(getFilesDir(), FILENAME));
             obInS = new ObjectInputStream(fInS);
             Object object = obInS.readObject();
-            if (object instanceof Vector){
+            if (object instanceof Vector<?>){
                 indexStrs = (Vector<IndexStr>) object;
                 viewUpdate();
                 Tools.simpleToast(getApplicationContext(), "Load Complete");
@@ -118,13 +116,19 @@ public class SubActivity9 extends AppCompatActivity {
     public void onButton_Confirm(){
         String str;
         int index;
-        //get String and delete.
+        //get String.
         str = editText_Str.getText().toString();
-        editText_Str.setText("");
-        //layout inflate.
-        layoutInflate(str);
-        //add to indexStrs
-        indexStrs.add(new IndexStr(layoutStrNum, str));
+        if (str.equals("")){
+            //void input.
+            Tools.simpleToast(getApplicationContext(), "문자를 입력해 주세요.");
+        }
+        else {
+            editText_Str.setText("");
+            //layout inflate.
+            layoutInflate(str);
+            //add to indexStrs
+            indexStrs.add(new IndexStr(layoutStrNum, str));
+        }
     }
     public void onButton_Delete(View v){
         //get Index.
@@ -186,12 +190,8 @@ class IntIndex implements Serializable{
 
 class IndexStr extends IntIndex{
     String str = "";
-    IndexStr(String str){
-        this(0, str);
-    }
-    IndexStr(int index){
-        this(index, "");
-    }
+    IndexStr(String str){ this(0, str); }
+    IndexStr(int index){ this(index, ""); }
     IndexStr(int index, String str){
         super(index); this.str = str;
     }
