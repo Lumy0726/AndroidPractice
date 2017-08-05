@@ -1,6 +1,11 @@
 package com.android.lmj.firstapp;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +21,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -60,6 +66,20 @@ public class SubActivity9 extends AppCompatActivity {
         });
         load();
     }
+    boolean getWriteExternalPer(){
+        int permissionCheck;
+        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED){ return true; }
+        }
+        return false;
+    }
+
     @Override
     protected void onDestroy() {
         save();
@@ -111,7 +131,35 @@ public class SubActivity9 extends AppCompatActivity {
     }
     void sendToSD(){
         //send string to sdCard.
-        Tools.simpleToast(getApplicationContext(), "Send To SDCard fail");
+        boolean isPermission = getWriteExternalPer();
+        if (isPermission){
+            String isWriteAble = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(isWriteAble)){
+                File file = new File(Environment.getExternalStorageDirectory(), FILENAME);
+                file.deleteOnExit();
+                FileWriter fOutS;
+                try{
+                    file.createNewFile();
+                    fOutS = new FileWriter(file);
+                    for (int loop1 = 0, loop1End = indexStrs.size(); loop1 < loop1End; loop1++){
+                        fOutS.write(indexStrs.elementAt(loop1).index + " ");
+                        fOutS.write(indexStrs.elementAt(loop1).str);
+                        fOutS.write("\n");
+                    }
+                    fOutS.close();
+                    Tools.simpleToast(getApplicationContext(), "Save to SDCard complete");
+                }
+                catch (Exception e){
+                    Tools.simpleToast(getApplicationContext(), "Save to SDCard fail");
+                }
+            }
+            else {
+                Tools.simpleToast(getApplicationContext(), "Cannot Write to External SDCard");
+            }
+        }
+        else {
+            Tools.simpleToast(getApplicationContext(), "Need Write to External SDCard Permission");
+        }
     }
     public void onButton_Confirm(){
         String str;
